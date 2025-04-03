@@ -9,16 +9,9 @@ const AccountantNavbar = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    localStorage.removeItem("authToken"); // Remove authentication token
+    sessionStorage.removeItem("userToken"); // Remove authentication token
     navigate("/");
 
-    // Prevent back navigation after logout
-    setTimeout(() => {
-      window.history.pushState(null, "", window.location.href);
-      window.addEventListener("popstate", () => {
-        navigate("/");
-      });
-    }, 0);
   };
 
   return (

@@ -1,8 +1,8 @@
 import { jwtDecode } from "jwt-decode"
 export const getuserToken=()=>{
-    return localStorage.getItem("userToken") || null
+    return sessionStorage.getItem("userToken") || null
 
 }
 export const getDecodeData=()=>{
-    return localStorage.getItem("userToken")? jwtDecode(localStorage.getItem("userToken")):null
+    return sessionStorage.getItem("userToken")? jwtDecode(sessionStorage.getItem("userToken")):null
 }

@@ -33,8 +33,8 @@ const Login = () => {
 
         // Store token and user info
         dispatch(login(data.token));
-        localStorage.setItem("userToken", data.token);
-        localStorage.setItem("userInfo", JSON.stringify(data.user)); 
+       sessionStorage.setItem("userToken", data.token);
+       sessionStorage.setItem("userInfo", JSON.stringify(data.user)); 
 
         navigate("/user-home");
       } catch (error) {

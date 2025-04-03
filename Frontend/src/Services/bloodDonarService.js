@@ -1,5 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from "../Utiles/Url";
+import { getuserToken } from "../Utiles/storageHandler";
 
 /**
  * Get authentication headers with Bearer Token
@@ -74,15 +75,14 @@ export const toggleBloodDonorAPI = async () => {
  * @param {Object} filters - { bloodType, name }
  */
 export const getBloodDonorsAPI = async (filters = {}) => {
-    try {
-        const response = await axios.get(`${BASE_URL}/blood-donor`, {
-            params: filters,
-            ...getAuthHeaders(),
+        const token = getuserToken()
+        const response = await axios.get(`${BASE_URL}/blood-donor?${filters}`, {
+            headers:{
+                Authorization:`Bearer ${token}`
+            }
         });
         return response.data;
-    } catch (error) {
-        handleApiError(error);
-    }
+    
 };
 
 /**

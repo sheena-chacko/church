@@ -9,8 +9,8 @@ const UserNavbar = () => {
 
   const handleLogout = () => {
     dispatch(logout()); // Dispatch Redux logout action
-    localStorage.removeItem("authToken"); // Clear auth token
-    navigate("/login"); // Redirect to login page
+    sessionStorage.removeItem("userToken"); // Clear auth token
+    navigate("/"); // Redirect to login page
   };
 
   return (

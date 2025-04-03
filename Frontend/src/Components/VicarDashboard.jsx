@@ -23,7 +23,7 @@ const VicarDashboard = () => {
           </Link>
 
           {/* Reports */}
-          <Link to="/vicar/reports">
+          <Link to="/balance-sheet">
             <div className="p-6 bg-white shadow-lg rounded-lg hover:shadow-xl transition-all">
               <FileSearch className="w-10 h-10 text-green-600 mb-2" />
               <h3 className="text-lg font-semibold">View Reports</h3>

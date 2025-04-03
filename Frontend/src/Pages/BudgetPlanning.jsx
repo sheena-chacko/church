@@ -1,224 +1,425 @@
-import React, { useState } from "react";
+// frontend/src/pages/BudgetPlanning.jsx
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { getuserToken } from '../Utiles/storageHandler';
+import { BASE_URL } from '../Utiles/Url';
 
+
+getuserToken
+BASE_URL
 const BudgetPlanning = () => {
-  // State for storing transactions
-  const [budgetItems, setBudgetItems] = useState([]);
+    const [budgets, setBudgets] = useState([]);
+    const [formData, setFormData] = useState({
+        type: 'income',
+        description: '',
+        amount: '',
+        dateOfPlanning: ''
+    });
+    const [editingId, setEditingId] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-  // Input fields for transactions
-  const [category, setCategory] = useState("Income");
-  const [description, setDescription] = useState("");
-  const [amount, setAmount] = useState("");
-  const [date, setDate] = useState("");
+    // API endpoint for budget planning
+    const API_ENDPOINT = `${BASE_URL}/budget-planning`;
 
-  // Function to add a new transaction
-  const handleAddItem = (e) => {
-    e.preventDefault();
-    if (!description || !amount || !date) {
-      alert("Please fill all required fields.");
-      return;
-    }
+    // Get token from sessionStorage using your utility function
+    const token = getuserToken();
 
-    // Create new transaction object
-    const newItem = {
-      id: budgetItems.length + 1,
-      category,
-      description,
-      amount: parseFloat(amount),
-      date,
+    // Configure headers with the token
+    const config = {
+        headers: {
+            Authorization: token ? `Bearer ${token}` : '',
+            'Content-Type': 'application/json'
+        }
     };
 
-    // Update the state
-    setBudgetItems([...budgetItems, newItem]);
+    useEffect(() => {
+        fetchBudgets();
+    }, []);
 
-    // Reset input fields
-    setDescription("");
-    setAmount("");
-    setDate("");
-  };
+    const fetchBudgets = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await axios.get(API_ENDPOINT, config);
+            console.log('Fetch Budgets Response:', response.data);
+            setBudgets(response.data);
+        } catch (error) {
+            console.error('Error fetching budgets:', error);
+            console.error('Error details:', {
+                message: error.message,
+                response: error.response ? error.response.data : null,
+                status: error.response ? error.response.status : null
+            });
+            setError(error.response?.data?.message || error.message || 'Failed to fetch budgets. Please check if the backend server is running and try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  // Delete a transaction
-  const handleDelete = (id) => {
-    setBudgetItems(budgetItems.filter((item) => item.id !== id));
-  };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError(null);
+        try {
+            if (editingId) {
+                await axios.put(`${API_ENDPOINT}/${editingId}`, formData, config);
+            } else {
+                await axios.post(API_ENDPOINT, formData, config);
+            }
+            fetchBudgets();
+            resetForm();
+        } catch (error) {
+            console.error('Error submitting budget:', error);
+            console.error('Error details:', {
+                message: error.message,
+                response: error.response ? error.response.data : null,
+                status: error.response ? error.response.status : null
+            });
+            setError(error.response?.data?.message || error.message || 'Failed to submit budget. Please try again.');
+        }
+    };
 
-  // Calculate totals
-  const totalIncome = budgetItems
-    .filter((item) => item.category === "Income")
-    .reduce((sum, item) => sum + item.amount, 0);
+    const handleDelete = async (id) => {
+        setError(null);
+        try {
+            await axios.delete(`${API_ENDPOINT}/${id}`, config);
+            fetchBudgets();
+        } catch (error) {
+            console.error('Error deleting budget:', error);
+            console.error('Error details:', {
+                message: error.message,
+                response: error.response ? error.response.data : null,
+                status: error.response ? error.response.status : null
+            });
+            setError(error.response?.data?.message || error.message || 'Failed to delete budget. Please try again.');
+        }
+    };
 
-  const totalExpenses = budgetItems
-    .filter((item) => item.category === "Expense")
-    .reduce((sum, item) => sum + item.amount, 0);
+    const handleEdit = (budget) => {
+        setEditingId(budget._id);
+        setFormData({
+            type: budget.type,
+            description: budget.description,
+            amount: budget.amount,
+            dateOfPlanning: budget.dateOfPlanning.split('T')[0]
+        });
+    };
 
-  const remainingBudget = totalIncome - totalExpenses;
+    const resetForm = () => {
+        setEditingId(null);
+        setFormData({
+            type: 'income',
+            description: '',
+            amount: '',
+            dateOfPlanning: ''
+        });
+    };
 
-  // Function to print the budget summary
-  const handlePrint = () => {
-    window.print();
-  };
+    return (
+        <div style={{
+            backgroundColor: '#F3F4F6', // bg-gray-100
+            minHeight: '100vh',
+            padding: '24px'
+        }}>
+            <div style={{
+                maxWidth: '1280px', // max-w-5xl
+                margin: '0 auto',
+                backgroundColor: '#FFFFFF', // bg-white
+                padding: '24px',
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+            }}>
+                <h2 style={{
+                    fontSize: '1.875rem', // text-3xl
+                    fontWeight: 'bold',
+                    color: '#1E3A8A', // text-blue-900
+                    marginBottom: '24px',
+                    textAlign: 'center'
+                }}>
+                    Church Budget Planning
+                </h2>
 
-  return (
-    <div className="bg-gray-100 min-h-screen p-6">
-      <div className="container mx-auto max-w-5xl bg-white p-6 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-blue-900 mb-6 text-center">
-          Church Budget Planning
-        </h1>
+                {error && (
+                    <div style={{
+                        color: '#DC2626', // text-red-600
+                        textAlign: 'center',
+                        marginBottom: '16px',
+                        padding: '10px',
+                        border: '1px solid #DC2626',
+                        borderRadius: '4px'
+                    }}>
+                        {error}
+                    </div>
+                )}
 
-        {/* Budget Form */}
-        <form
-          onSubmit={handleAddItem}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
-        >
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="border p-3 rounded w-full focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="Income">Income</option>
-            <option value="Expense">Expense</option>
-          </select>
-
-          <input
-            type="text"
-            placeholder="Description (e.g., Donation, Rent)"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="border p-3 rounded w-full focus:ring-2 focus:ring-blue-500"
-            required
-          />
-
-          <input
-            type="number"
-            placeholder="Amount ($)"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="border p-3 rounded w-full focus:ring-2 focus:ring-blue-500"
-            required
-          />
-
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="border p-3 rounded w-full focus:ring-2 focus:ring-blue-500"
-            required
-          />
-
-          <div className="col-span-1 md:col-span-2 flex gap-4">
-            <button
-              type="submit"
-              className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition w-full"
-            >
-              Add Transaction
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setCategory("Income");
-                setDescription("");
-                setAmount("");
-                setDate("");
-              }}
-              className="px-6 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition w-full"
-            >
-              Clear
-            </button>
-          </div>
-        </form>
-
-        {/* Budget Summary */}
-        <div className="mt-6 bg-gray-50 p-4 rounded-lg shadow-md text-center">
-          <h2 className="text-xl font-semibold text-blue-800 mb-2">
-            Budget Summary
-          </h2>
-          <p className="text-green-600 text-lg font-bold">
-            Total Income: ${totalIncome.toFixed(2)}
-          </p>
-          <p className="text-red-600 text-lg font-bold">
-            Total Expenses: ${totalExpenses.toFixed(2)}
-          </p>
-          <p
-            className={`text-lg font-bold ${
-              remainingBudget >= 0 ? "text-green-800" : "text-red-800"
-            }`}
-          >
-            Remaining Budget: ${remainingBudget.toFixed(2)}
-          </p>
-        </div>
-
-        {/* Transaction List */}
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold text-blue-800 mb-2 text-center">
-            Detailed Transaction Records
-          </h2>
-
-          {budgetItems.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {budgetItems.map((item) => (
-                <div
-                  key={item.id}
-                  className={`p-4 rounded-lg shadow-md ${
-                    item.category === "Income"
-                      ? "bg-green-50 border-l-4 border-green-500"
-                      : "bg-red-50 border-l-4 border-red-500"
-                  }`}
+                <form 
+                    onSubmit={handleSubmit}
+                    style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', // Responsive grid
+                        gap: '16px', // gap-4
+                        marginBottom: '24px'
+                    }}
                 >
-                  <p className="text-gray-600 text-sm">{item.date}</p>
-                  <h3
-                    className={`text-lg font-bold ${
-                      item.category === "Income"
-                        ? "text-green-800"
-                        : "text-red-800"
-                    }`}
-                  >
-                    {item.category}: {item.description}
-                  </h3>
-                  <p
-                    className={`font-semibold mt-2 text-lg ${
-                      item.category === "Income"
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
-                  >
-                    ${item.amount.toFixed(2)}
-                  </p>
+                    <select 
+                        value={formData.type} 
+                        onChange={(e) => setFormData({...formData, type: e.target.value})}
+                        style={{
+                            padding: '12px', // p-3
+                            border: '1px solid #D1D5DB', // border
+                            borderRadius: '4px', // rounded
+                            width: '100%',
+                            outline: 'none',
+                            transition: 'all 0.2s',
+                            ':focus': {
+                                borderColor: '#3B82F6', // focus:ring-blue-500
+                                boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.5)'
+                            }
+                        }}
+                    >
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                    
+                    <input
+                        type="text"
+                        placeholder="Description (e.g., Donation, Rent)"
+                        value={formData.description}
+                        onChange={(e) => setFormData({...formData, description: e.target.value})}
+                        required
+                        style={{
+                            padding: '12px',
+                            border: '1px solid #D1D5DB',
+                            borderRadius: '4px',
+                            width: '100%',
+                            outline: 'none',
+                            transition: 'all 0.2s',
+                            ':focus': {
+                                borderColor: '#3B82F6',
+                                boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.5)'
+                            }
+                        }}
+                    />
+                    
+                    <input
+                        type="number"
+                        placeholder="Amount ($)"
+                        value={formData.amount}
+                        onChange={(e) => setFormData({...formData, amount: e.target.value})}
+                        required
+                        style={{
+                            padding: '12px',
+                            border: '1px solid #D1D5DB',
+                            borderRadius: '4px',
+                            width: '100%',
+                            outline: 'none',
+                            transition: 'all 0.2s',
+                            ':focus': {
+                                borderColor: '#3B82F6',
+                                boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.5)'
+                            }
+                        }}
+                    />
+                    
+                    <input
+                        type="date"
+                        value={formData.dateOfPlanning}
+                        onChange={(e) => setFormData({...formData, dateOfPlanning: e.target.value})}
+                        required
+                        style={{
+                            padding: '12px',
+                            border: '1px solid #D1D5DB',
+                            borderRadius: '4px',
+                            width: '100%',
+                            outline: 'none',
+                            transition: 'all 0.2s',
+                            ':focus': {
+                                borderColor: '#3B82F6',
+                                boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.5)'
+                            }
+                        }}
+                    />
+                    
+                    <div style={{
+                        display: 'flex',
+                        gap: '16px', // gap-4
+                        gridColumn: 'span 1 / span 2', // md:col-span-2
+                        flexWrap: 'wrap'
+                    }}>
+                        <button 
+                            type="submit"
+                            disabled={loading}
+                            style={{
+                                padding: '8px 24px', // px-6 py-2
+                                backgroundColor: loading ? '#D1D5DB' : '#16A34A', // bg-green-600
+                                color: '#FFFFFF',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: loading ? 'not-allowed' : 'pointer',
+                                transition: 'background-color 0.2s',
+                                width: '100%',
+                                maxWidth: '200px'
+                            }}
+                            onMouseOver={(e) => !loading && (e.target.style.backgroundColor = '#15803D')} // hover:bg-green-700
+                            onMouseOut={(e) => !loading && (e.target.style.backgroundColor = '#16A34A')}
+                        >
+                            {editingId ? 'Update' : 'Add'} Budget
+                        </button>
+                        
+                        {editingId && (
+                            <button 
+                                type="button" 
+                                onClick={resetForm}
+                                style={{
+                                    padding: '8px 24px',
+                                    backgroundColor: '#9CA3AF', // bg-gray-400
+                                    color: '#FFFFFF',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    transition: 'background-color 0.2s',
+                                    width: '100%',
+                                    maxWidth: '200px'
+                                }}
+                                onMouseOver={(e) => e.target.style.backgroundColor = '#6B7280'} // hover:bg-gray-500
+                                onMouseOut={(e) => e.target.style.backgroundColor = '#9CA3AF'}
+                            >
+                                Cancel
+                            </button>
+                        )}
+                    </div>
+                </form>
 
-                  {/* Transaction Explanation Section */}
-                  <p className="mt-2 text-gray-700 italic">
-                    {item.category === "Income"
-                      ? `This amount was received as income for ${item.description} on ${item.date}. This could be from donations, fundraising, or offerings.`
-                      : `This expense was recorded for ${item.description} on ${item.date}. This could include utility bills, rent, or other church-related costs.`}
-                  </p>
+                {loading ? (
+                    <div style={{
+                        textAlign: 'center',
+                        color: '#4B5563', // text-gray-600
+                        marginTop: '24px'
+                    }}>
+                        Loading budgets...
+                    </div>
+                ) : (
+                    <div style={{
+                        marginTop: '24px'
+                    }}>
+                        <h2 style={{
+                            fontSize: '1.25rem', // text-xl
+                            fontWeight: '600', // font-semibold
+                            color: '#1E3A8A', // text-blue-800
+                            marginBottom: '8px',
+                            textAlign: 'center'
+                        }}>
+                            Detailed Budget Records
+                        </h2>
 
-                  {/* Delete Button */}
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="mt-2 px-4 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
-                  >
-                    Delete
-                  </button>
-                </div>
-              ))}
+                        {budgets.length > 0 ? (
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', // md:grid-cols-2
+                                gap: '16px' // gap-4
+                            }}>
+                                {budgets.map(budget => (
+                                    <div 
+                                        key={budget._id}
+                                        style={{
+                                            padding: '16px', // p-4
+                                            borderRadius: '8px', // rounded-lg
+                                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // shadow-md
+                                            backgroundColor: budget.type === 'income' ? '#ECFDF5' : '#FEF2F2', // bg-green-50 or bg-red-50
+                                            borderLeft: `4px solid ${budget.type === 'income' ? '#10B981' : '#EF4444'}`, // border-l-4 border-green-500 or border-red-500
+                                            transition: 'all 0.2s'
+                                        }}
+                                    >
+                                        <p style={{
+                                            color: '#4B5563', // text-gray-600
+                                            fontSize: '0.875rem' // text-sm
+                                        }}>
+                                            {new Date(budget.dateOfPlanning).toLocaleDateString()}
+                                        </p>
+                                        <h3 style={{
+                                            fontSize: '1.125rem', // text-lg
+                                            fontWeight: 'bold',
+                                            color: budget.type === 'income' ? '#065F46' : '#991B1B', // text-green-800 or text-red-800
+                                            marginTop: '4px'
+                                        }}>
+                                            {budget.type}: {budget.description}
+                                        </h3>
+                                        <p style={{
+                                            fontWeight: '600', // font-semibold
+                                            marginTop: '8px',
+                                            fontSize: '1.125rem',
+                                            color: budget.type === 'income' ? '#16A34A' : '#DC2626' // text-green-600 or text-red-600
+                                        }}>
+                                            ${budget.amount.toFixed(2)}
+                                        </p>
+                                        <p style={{
+                                            marginTop: '8px',
+                                            color: '#374151', // text-gray-700
+                                            fontStyle: 'italic'
+                                        }}>
+                                            {budget.type === 'income'
+                                                ? `This amount was received as income for ${budget.description} on ${new Date(budget.dateOfPlanning).toLocaleDateString()}. This could be from donations, fundraising, or offerings.`
+                                                : `This expense was recorded for ${budget.description} on ${new Date(budget.dateOfPlanning).toLocaleDateString()}. This could include utility bills, rent, _
+
+System: or other church-related costs.`}
+                                        </p>
+                                        <div style={{
+                                            display: 'flex',
+                                            gap: '8px',
+                                            marginTop: '8px'
+                                        }}>
+                                            <button 
+                                                onClick={() => handleEdit(budget)}
+                                                disabled={loading}
+                                                style={{
+                                                    padding: '4px 16px', // px-4 py-1
+                                                    backgroundColor: loading ? '#D1D5DB' : '#2563EB', // bg-blue-600
+                                                    color: '#FFFFFF',
+                                                    border: 'none',
+                                                    borderRadius: '4px',
+                                                    cursor: loading ? 'not-allowed' : 'pointer',
+                                                    transition: 'background-color 0.2s'
+                                                }}
+                                                onMouseOver={(e) => !loading && (e.target.style.backgroundColor = '#1D4ED8')} // hover:bg-blue-700
+                                                onMouseOut={(e) => !loading && (e.target.style.backgroundColor = '#2563EB')}
+                                            >
+                                                Edit
+                                            </button>
+                                            <button 
+                                                onClick={() => handleDelete(budget._id)}
+                                                disabled={loading}
+                                                style={{
+                                                    padding: '4px 16px',
+                                                    backgroundColor: loading ? '#D1D5DB' : '#EF4444', // bg-red-500
+                                                    color: '#FFFFFF',
+                                                    border: 'none',
+                                                    borderRadius: '4px',
+                                                    cursor: loading ? 'not-allowed' : 'pointer',
+                                                    transition: 'background-color 0.2s'
+                                                }}
+                                                onMouseOver={(e) => !loading && (e.target.style.backgroundColor = '#DC2626')} // hover:bg-red-600
+                                                onMouseOut={(e) => !loading && (e.target.style.backgroundColor = '#EF4444')}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p style={{
+                                color: '#4B5563', // text-gray-600
+                                textAlign: 'center',
+                                marginTop: '16px'
+                            }}>
+                                No budget items added yet.
+                            </p>
+                        )}
+                    </div>
+                )}
             </div>
-          ) : (
-            <p className="text-gray-600 text-center">
-              No transactions added yet.
-            </p>
-          )}
         </div>
-
-        {/* Print Button */}
-        <div className="flex justify-center mt-6">
-          <button
-            onClick={handlePrint}
-            className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-          >
-            Print Budget Report
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default BudgetPlanning;

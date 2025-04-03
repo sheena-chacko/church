@@ -23,7 +23,6 @@ import AccountantHome from './Pages/AccountantHome';
 import BalanceSheet from './Pages/BalanceSheet';
 import ExpenseManagement from './Pages/ExpenseManagement';
 import IncomeStatements from './Pages/IncomeStatements';
-import FinancialReports from './Pages/FinancialReports';
 import DonationTracking from './Pages/DonationTracking';
 import BudgetPlanning from './Pages/BudgetPlanning';
 import AdminLogin from './Pages/AdminLogin';
@@ -43,12 +42,13 @@ import ParishList from './Pages/ParishList';
 import QuizForms from './Pages/QuizForms';
 import Virtualid from './Pages/VirtualID';
 import BloodDonationPage from './Pages/BloodDonationPage';
-import ProtectedRoute from './Pages/ProtectedRoute';
 import FamilyUnitForm from './Pages/FamilyUnitForm';
 import PastVicars from './Pages/Past Vicars.jsx';
 import Profile from './Pages/Profile.jsx';
 import ViewBloodDonationPage from './Pages/ViewBloodDonationPage.jsx';
 import FamilyUnitView from './Pages/FamilyUnitView.jsx';
+import FinancialReport from './Pages/FinancialReports';
+// import ParishMemberPage from './Pages/ParishMemberPage.jsx';
 // import BloodDonationList from './Pages/BloodDonationList';
 
 // New Vicar Pages
@@ -69,6 +69,8 @@ function App() {
         <Route path="/image" element={<><Navbar/><ImageGalleryUpload /><Footer/></>} />
         <Route path="/parish-directory" element={<><Navbar/><ParishDirectory /><Footer/></>} />
         <Route path="/parish-list" element={<><ParishList /></>} />
+        {/* <Route path="/parish-member" element={<><ParishMemberPage /></>} /> */}
+
 
         <Route path="/past-vicars" element={<><Navbar/><PastVicars /><Footer/></>} />
 
@@ -115,7 +117,7 @@ function App() {
         <Route path="/balance-sheet" element={<><AccountantNavbar/><BalanceSheet/><Footer/></>} />
         <Route path="/expense-management" element={<><AccountantNavbar/><ExpenseManagement/><Footer/></>} />
         <Route path="/income-statements" element={<><AccountantNavbar/><IncomeStatements/><Footer/></>} />
-        <Route path="/financial-reports" element={<><AccountantNavbar/><FinancialReports/><Footer/></>} />
+        <Route path="/financial-reports" element={<><AccountantNavbar/><FinancialReport/><Footer/></>} />
         <Route path="/donation-tracking" element={<><AccountantNavbar/><DonationTracking/><Footer/></>} />
         <Route path="/budget-planning" element={<><AccountantNavbar/><BudgetPlanning/><Footer/></>} />
 

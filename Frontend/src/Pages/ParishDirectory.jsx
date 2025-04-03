@@ -1,152 +1,122 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useFormik } from "formik";
-import { BASE_URL } from "../Utiles/Url";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { FaUser, FaCalendarAlt, FaMapMarkerAlt, FaPlus, FaList, FaHome, FaHashtag } from "react-icons/fa";
-import { getuserToken } from "../Utiles/storageHandler";
-
-export const fetchMembers = async () => {
-  const token = getuserToken()
-  console.log(token);
-  const response = await axios.get(`${BASE_URL}/parish-member/parish`,{
-    headers:{
-      Authorization:`Bearer ${token}`
-    }
-  });
-  return response.data;
-};
+import { getuserToken, getDecodeData } from "../Utiles/storageHandler"; // Ensure correct import
+import { BASE_URL } from "../Utiles/Url";
 
 const ParishDirectory = () => {
-  const token = getuserToken()
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+    const [formData, setFormData] = useState({
+        name: "",
+        relation: "",
+        occupation: "",
+        contactNumber: "",
+        dateOfBirth: "",
+        familyUnitCode: "",
+        uniqueFamilyCode: "",
+    });
 
-  const { data: members } = useQuery({
-    queryKey: ["parish-members"],
-    queryFn: fetchMembers,
-  });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
 
-  console.log(members);
-  
-  const addMemberMutation = useMutation({
-    mutationKey:['add-parish-member'],
-    mutationFn: async (newMember) =>
-      axios.post(`${BASE_URL}/parish-member`, newMember, {
-        headers: { Authorization:`Bearer ${token}` },
-      })
-  })
+    // Handle input changes
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
 
-  const formik = useFormik({
-    initialValues: {
-      fullName: "",
-      dateOfBirth: "",
-      relation: "Son", 
-      location: "",
-      houseName: "",
-      houseNumber: ""
-    },
-    onSubmit: (values) => addMemberMutation.mutate(values),
-  });
+    // Handle form submission
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError("");
+        setSuccess("");
 
-  console.log(addMemberMutation.data);
-  
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-lg bg-white p-6 rounded-2xl shadow-lg">
-        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">Parish Directory</h2>
+        const token = getuserToken();
+        const userData = getDecodeData(); // Decode JWT to get user role
 
-        <form onSubmit={formik.handleSubmit} className="space-y-4">
-          <div className="relative">
-            <FaUser className="absolute left-3 top-3 text-gray-500" />
-            <input
-              type="text"
-              className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
-              placeholder="Full Name"
-              {...formik.getFieldProps("fullName")}
-              required
-            />
-          </div>
+        console.log("Retrieved Token:", token);
+        console.log("Decoded User Data:", userData);
 
-          <div className="relative">
-            <FaCalendarAlt className="absolute left-3 top-3 text-gray-500" />
-            <input
-              type="date"
-              className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
-              placeholder="Date of Birth"
-              {...formik.getFieldProps("dateOfBirth")}
-              required
-            />
-          </div>
+        if (!token) {
+            setError("Unauthorized: Only verified users can add family members.");
+            setLoading(false);
+            return;
+        }
 
-          <div className="relative">
-            <FaUser className="absolute left-3 top-3 text-gray-500" />
-            <select
-              className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
-              {...formik.getFieldProps("relation")}
-              required
-            >
-              <option value="Son">Son</option>
-              <option value="Daughter">Daughter</option>
-              <option value="Spouse">Spouse</option>
-              <option value="Parent">Parent</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
+        // Check if the role is either "Admin" or "Vicar"
+        const userRole = userData?.role?.toLowerCase(); // Convert to lowercase for consistency
+        if (userRole !== "admin" && userRole !== "vicar") {
+            setError("Unauthorized: You do not have permission to add a family member.");
+            setLoading(false);
+            return;
+        }
 
-          {/* <div className="relative">
-            <FaMapMarkerAlt className="absolute left-3 top-3 text-gray-500" />
-            <select
-              className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
-              {...formik.getFieldProps("location")}
-              required
-            >
-              <option value="City A">City A</option>
-              <option value="City B">City B</option>
-              <option value="City C">City C</option>
-            </select>
-          </div> */}
+        try {
+            const response = await axios.post(
+                `${BASE_URL}/family`,
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
 
-          <div className="relative">
-            <FaHome className="absolute left-3 top-3 text-gray-500" />
-            <input
-              type="text"
-              className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
-              placeholder="House Name"
-              {...formik.getFieldProps("houseName")}
-              required
-            />
-          </div>
+            console.log("Response Data:", response.data);
 
-          <div className="relative">
-            <FaHashtag className="absolute left-3 top-3 text-gray-500" />
-            <input
-              type="text"
-              className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
-              placeholder="House Number"
-              {...formik.getFieldProps("houseNumber")}
-              required
-            />
-          </div>
+            setSuccess("Family member added successfully!");
+            setFormData({
+                name: "",
+                relation: "",
+                occupation: "",
+                contactNumber: "",
+                dateOfBirth: "",
+                familyUnitCode: "",
+                uniqueFamilyCode: "",
+            });
+        } catch (err) {
+            console.error("Error adding family member:", err.response);
+            setError(err.response?.data?.message || "Failed to add family member.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-          <button
-            type="submit"
-            className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition duration-300"
-          >
-            <FaPlus /> Add Member
-          </button>
-        </form>
+    return (
+        <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg mt-6">
+            <h2 className="text-2xl font-bold text-center mb-4 text-gray-800">
+                Add Family Member
+            </h2>
 
-        <button
-          onClick={() => navigate("/parish-list")}
-          className="mt-5 w-full flex items-center justify-center gap-2 bg-gray-600 hover:bg-gray-700 text-white py-3 rounded-lg font-semibold transition duration-300"
-        >
-          <FaList /> View Parish Members
-        </button>
-      </div>
-    </div>
-  );
+            {error && <p className="text-red-500 text-center">{error}</p>}
+            {success && <p className="text-green-500 text-center">{success}</p>}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+                {["name", "relation", "occupation", "contactNumber", "dateOfBirth", "familyUnitCode", "uniqueFamilyCode"].map((field, index) => (
+                    <div key={index}>
+                        <label className="block text-gray-700 font-semibold">{field.replace(/([A-Z])/g, " $1").trim()}</label>
+                        <input
+                            type={field === "dateOfBirth" ? "date" : "text"}
+                            name={field}
+                            value={formData[field]}
+                            onChange={handleChange}
+                            required={field !== "occupation"}
+                            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder={`Enter ${field.replace(/([A-Z])/g, " $1").toLowerCase()}`}
+                        />
+                    </div>
+                ))}
+
+                <button
+                    type="submit"
+                    className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
+                    disabled={loading}
+                >
+                    {loading ? "Submitting..." : "Add Member"}
+                </button>
+            </form>
+        </div>
+    );
 };
 
 export default ParishDirectory;

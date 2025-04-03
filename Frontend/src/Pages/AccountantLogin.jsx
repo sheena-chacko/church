@@ -37,7 +37,7 @@ const AccountantLogin = () => {
         }
 
         dispatch(login(data.token));
-        localStorage.setItem("accountantData",data.token);
+        sessionStorage.setItem("userToken",data.token);
         navigate("/accountant-home");
       } catch (err) {
         console.error("Login failed", err);

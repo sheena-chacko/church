@@ -15,7 +15,7 @@ import FamilyUnitForm from "../Pages/FamilyUnitForm";
 import ImageGalleryUpload from "../Pages/ImageGalleryUpload";
 import QuizForms from "../Pages/QuizForms";
 
-const AdminDashboard = () => {
+const   AdminDashboard = () => {
   const [userDropdown, setUserDropdown] = useState(false);
   const [reportsDropdown, setReportsDropdown] = useState(false);
 
@@ -34,15 +34,8 @@ const AdminDashboard = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    localStorage.removeItem("authToken");
+    sessionStorage.removeItem("userToken");
     navigate("/");
-
-    setTimeout(() => {
-      window.history.pushState(null, "", window.location.href);
-      window.addEventListener("popstate", () => {
-        navigate("/");
-      });
-    }, 0);
   };
 
   // Fetch blood donors data

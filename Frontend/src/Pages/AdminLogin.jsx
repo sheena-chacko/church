@@ -32,9 +32,10 @@ const AdminLogin = () => {
     onSubmit: async (values) => {
       setApiError(""); // Clear previous errors
       try {
+       
         const data = await mutateAsync(values);
         dispatch(login(data.token));
-        localStorage.setItem("userToken",data.token);
+        sessionStorage.setItem("userToken",data.token);
         navigate("/admin-dashboard");
       } catch (err) {
         console.error("Login error:", err);

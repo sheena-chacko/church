@@ -28,6 +28,8 @@ export const slicecust = createSlice({
             state.isLogin = true;
         },
         logout: (state) => {
+            console.log("working");
+            
             state.isLogin = false;
             state.token = null;
             state.name = null;

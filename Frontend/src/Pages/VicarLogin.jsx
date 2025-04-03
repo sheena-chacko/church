@@ -28,7 +28,7 @@ const VicarLogin = () => {
         const data = await mutateAsync(values);
         console.log("API Response:", data);
         dispatch(login(data.token));
-        localStorage.setItem("userToken", data.token);
+        sessionStorage.setItem("userToken", data.token);
         navigate("/vicar-dashboard");
       
     },
