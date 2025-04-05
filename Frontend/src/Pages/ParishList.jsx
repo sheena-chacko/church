@@ -1,49 +1,90 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { FaUsers, FaArrowLeft } from "react-icons/fa";
+import { familyService } from "../Services/familyService";
+
+
+// Utility function to calculate age from date of birth
+const calculateAge = (dateOfBirth) => {
+  if (!dateOfBirth) return "N/A";
+  const dob = new Date(dateOfBirth);
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const monthDiff = today.getMonth() - dob.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+    age--;
+  }
+  return age;
+};
 
 const ParishList = () => {
-  const [members, setMembers] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    axios.get("http://localhost:5000/api/parish")
-      .then((res) => setMembers(res.data))
-      .catch((err) => console.error("Error fetching members:", err));
-  }, []);
+  // Fetch all family members using useQuery
+  const {
+    data: members = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["familyMembers"],
+    queryFn: familyService.getAllFamilyMembers,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <p className="text-gray-600">Loading family members...</p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <p className="text-red-500" role="alert">
+          {error.message || "Failed to load family members."}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-3xl bg-white p-6 rounded-lg shadow-lg">
+      <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg">
         <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">
-          Parish Members List
+          Family Members List
         </h2>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-200">
-                <th className="p-3">Full Name</th>
+                <th className="p-3">Name</th>
                 <th className="p-3">Age</th>
-                <th className="p-3">Role</th>
-                <th className="p-3">Location</th>
+                <th className="p-3">Relation</th>
+                <th className="p-3">Contact Number</th>
+                <th className="p-3">Family Unit Code</th>
+                <th className="p-3">Creator</th>
               </tr>
             </thead>
             <tbody>
               {members.length > 0 ? (
                 members.map((member) => (
                   <tr key={member._id} className="border-b">
-                    <td className="p-3">{member.fullName}</td>
-                    <td className="p-3">{member.age}</td>
-                    <td className="p-3">{member.role}</td>
-                    <td className="p-3">{member.location}</td>
+                    <td className="p-3">{member.name}</td>
+                    <td className="p-3">{calculateAge(member.dateOfBirth)}</td>
+                    <td className="p-3">{member.relation}</td>
+                    <td className="p-3">{member.contactNumber || "N/A"}</td>
+                    <td className="p-3">{member.familyUnitCode}</td>
+                    <td className="p-3">{member.creatorId?.name || "N/A"}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="text-center py-4 text-gray-500">
-                    No parish members found.
+                  <td colSpan="6" className="text-center py-4 text-gray-500">
+                    No family members found.
                   </td>
                 </tr>
               )}
@@ -53,7 +94,6 @@ const ParishList = () => {
 
         {/* Navigation Buttons */}
         <div className="flex justify-between mt-6">
-          {/* Back to Parish Directory Button */}
           <button
             onClick={() => navigate("/")}
             className="bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg flex items-center gap-2"
@@ -61,7 +101,6 @@ const ParishList = () => {
             <FaArrowLeft /> Back to Parish Directory
           </button>
 
-          {/* View Youth Members Button */}
           <button
             onClick={() => navigate("/virtualid")}
             className="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg flex items-center gap-2"

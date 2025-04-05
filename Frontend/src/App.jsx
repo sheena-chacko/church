@@ -48,6 +48,7 @@ import Profile from './Pages/Profile.jsx';
 import ViewBloodDonationPage from './Pages/ViewBloodDonationPage.jsx';
 import FamilyUnitView from './Pages/FamilyUnitView.jsx';
 import FinancialReport from './Pages/FinancialReports';
+import VerifyUsers from './Pages/VerifyUsers.jsx';
 // import ParishMemberPage from './Pages/ParishMemberPage.jsx';
 // import BloodDonationList from './Pages/BloodDonationList';
 
@@ -108,6 +109,8 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/family-unit" element={<FamilyUnitForm />} />
         <Route path="/view-family-unit" element={<FamilyUnitView />} />
+        <Route path="/verify-users" element={<VerifyUsers />} />
+
 
 
 

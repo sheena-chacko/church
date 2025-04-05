@@ -1,83 +1,78 @@
 import React, { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import galleryService from "../Services/GalleryService";
 
 const ImageGalleryUpload = () => {
-  const [selectedImages, setSelectedImages] = useState([]);
+  const [file, setFile] = useState(null);
+  const [description, setDescription] = useState("");
 
-  // Handle file selection
+  const mutation = useMutation({
+    mutationFn: ({ file, description }) => galleryService.createGalleryItem(file, description),
+    onSuccess: () => {
+      setFile(null);
+      setDescription("");
+      document.getElementById("file-input").value = "";
+      alert("File uploaded successfully!");
+    },
+    onError: (error) => {
+      alert(error.response?.data?.message || "Upload failed. Try again.");
+    },
+  });
+
   const handleFileChange = (event) => {
-    const files = Array.from(event.target.files);
-
-    // Convert files to URL for preview
-    const imagePreviews = files.map((file) => ({
-      id: URL.createObjectURL(file), // Unique URL for preview
-      file,
-    }));
-
-    setSelectedImages([...selectedImages, ...imagePreviews]);
+    setFile(event.target.files[0]);
   };
 
-  // Remove an image from selection
-  const handleRemoveImage = (id) => {
-    setSelectedImages(selectedImages.filter((image) => image.id !== id));
-  };
-
-  // Handle form submission (placeholder for backend integration)
   const handleSubmit = (event) => {
     event.preventDefault();
-    alert("Images uploaded successfully! (Backend integration needed)");
+    if (!file) {
+      alert("Please select a file to upload.");
+      return;
+    }
+    mutation.mutate({ file, description });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex flex-col items-center justify-center p-6">
-      <div className="bg-white p-8 rounded-2xl shadow-lg max-w-2xl w-full">
-        <h2 className="text-3xl font-bold text-gray-900 text-center mb-6">
-          📸 Upload Images to Gallery
-        </h2>
-
-        {/* Image Upload Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <label className="block text-gray-700 font-medium">
-            Select images:
-          </label>
+    <div className="container mx-auto py-10">
+      <h1 className="text-3xl font-bold text-center mb-8">Upload to Gallery</h1>
+      <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-4">
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Select File:</label>
           <input
+            id="file-input"
             type="file"
-            multiple
-            accept="image/*"
+            accept="image/*,video/*"
             onChange={handleFileChange}
-            className="border border-gray-300 p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+            className="w-full p-2 border rounded"
           />
-
-          {/* Image Preview Section */}
-          {selectedImages.length > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-              {selectedImages.map((image) => (
-                <div key={image.id} className="relative group">
-                  <img
-                    src={image.id}
-                    alt="Preview"
-                    className="w-full h-32 object-cover rounded-lg shadow-md border border-gray-300"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveImage(image.id)}
-                    className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 text-xs opacity-0 group-hover:opacity-100 transition"
-                  >
-                    ❌
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition transform hover:scale-105"
-          >
-            🚀 Upload Images
-          </button>
-        </form>
-      </div>
+        </div>
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Description (optional):</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full p-2 border rounded"
+            placeholder="Add a description..."
+          />
+        </div>
+        {mutation.isError && (
+          <p className="text-red-600 text-center">
+            {mutation.error.response?.data?.message || "Upload failed"}
+          </p>
+        )}
+        {mutation.isSuccess && (
+          <p className="text-green-600 text-center">File uploaded successfully!</p>
+        )}
+        <button
+          type="submit"
+          disabled={mutation.isPending}
+          className={`w-full py-2 rounded text-white ${
+            mutation.isPending ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+          }`}
+        >
+          {mutation.isPending ? "Uploading..." : "Upload"}
+        </button>
+      </form>
     </div>
   );
 };

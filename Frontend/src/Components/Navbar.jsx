@@ -25,9 +25,9 @@ const Navbar = () => {
           <li>
             <Link to="/gallery" className="hover:text-yellow-400 transition">Gallery</Link>
           </li>
-          <li>
+          {/* <li>
             <Link to="/parish-directory" className="hover:text-yellow-400 transition">Parish Directory</Link>
-          </li>
+          </li> */}
           <li>
             <Link to="/donation" className="hover:text-yellow-400 transition">Donation</Link>
           </li>

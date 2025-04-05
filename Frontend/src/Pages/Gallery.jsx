@@ -1,62 +1,67 @@
-import React, { useState } from "react";
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import galleryService from "../Services/GalleryService";
 
 const Gallery = () => {
-  const [selectedMedia, setSelectedMedia] = useState(null);
+  const {
+    data: galleryItems = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["galleryItems"],
+    queryFn: galleryService.getAllGalleryItems,
+  });
 
-  const handleMediaClick = (mediaSrc) => {
-    setSelectedMedia(mediaSrc);
+  const renderMedia = (item) => {
+    if (!item.url) {
+      return <p className="text-red-500 text-center">Invalid item data</p>;
+    }
+
+    return item.type === "Image" ? (
+      <img
+        src={item.url}
+        alt={item.description || "Gallery Item"}
+        className="w-full h-full object-cover"
+      />
+    ) : (
+      <video
+        src={item.url}
+        controls
+        className="w-full h-full object-cover"
+      />
+    );
   };
 
-  const handleClose = () => {
-    setSelectedMedia(null);
-  };
+  if (isLoading) {
+    return <p className="text-center text-gray-600">Loading...</p>;
+  }
 
-  const mediaItems = [
-    { type: 'image', src: '/rr.jpg' },
-    { type: 'video', src: '/perunal.mp4' },
-    { type: 'image', src: '/ee.jpg' },
-    { type: 'video', src: '/thirunal.mp4' },
-    { type: 'image', src: '/photoo.jpg' },
-    { type: 'video', src: '/video6.mp4' },
-    { type: 'video', src: '/video4.mp4' },
-    { type: 'video', src: '/video5.mp4' },
-    { type: 'video', src: '/video7.mp4' },
-    { type: 'video', src: '/video8.mp4' }
-  ];
+  if (isError) {
+    return (
+      <p className="text-red-600 text-center">
+        {error.message || "Failed to load gallery items."}
+      </p>
+    );
+  }
 
   return (
-    <div className="container mx-auto px-4 py-16">
-      <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Church Gallery</h1>
-      <div className="masonry sm:columns-2 md:columns-3 lg:columns-4 gap-4">
-        {mediaItems.map((item, index) => (
-          item.type === 'image' ? (
-            <img 
-              key={index} 
-              src={item.src} 
-              alt="Gallery Image" 
-              className="rounded-lg shadow-lg cursor-pointer w-full mb-4 break-inside-avoid" 
-            />
-          ) : (
-            <video 
-              key={index} 
-              onClick={() => handleMediaClick(item.src)} 
-              autoPlay loop muted 
-              className="rounded-lg shadow-lg cursor-pointer w-full mb-4 break-inside-avoid"
+    <div className="min-h-screen bg-gray-100">
+      <h2 className="text-3xl font-bold text-gray-900 text-center py-6">
+        Gallery
+      </h2>
+      {galleryItems.length === 0 ? (
+        <p className="text-center text-gray-600">No gallery items available.</p>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          {galleryItems.map((item) => (
+            <div
+              key={item._id || Math.random()}
+              className="w-[150px] h-[150px] sm:w-[200px] sm:h-[200px] md:w-[250px] md:h-[250px] overflow-hidden bg-white"
             >
-              <source src={item.src} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          )
-        ))}
-      </div>
-
-      {selectedMedia && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={handleClose}>
-          {selectedMedia.endsWith('.mp4') ? (
-            <video src={selectedMedia} controls autoPlay className="rounded-lg shadow-lg w-3/4 max-w-4xl" />
-          ) : (
-            <img src={selectedMedia} className="rounded-lg shadow-lg w-3/4 max-w-4xl" alt="Full View" />
-          )}
+              {renderMedia(item)}
+            </div>
+          ))}
         </div>
       )}
     </div>

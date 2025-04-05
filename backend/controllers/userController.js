@@ -104,6 +104,22 @@ const userController = {
             res.status(500).json({ message: 'Internal server error', error: error.message });
         }
     }),
+    getUnverifiedUsers: asyncHandler(async (req, res) => {
+        try {
+          const { search } = req.query;
+          let query = { isParishMember: false,role:'Normal User' }; // Filter for unverified users
+    
+          if (search) {
+            query.name = { $regex: search, $options: 'i' }; // Optional search by name
+          }
+    
+          const users = await User.find(query).select('-password');
+          res.json(users);
+        } catch (error) {
+          console.error('Get Unverified Users Error:', error);
+          res.status(500).json({ message: 'Internal server error', error: error.message });
+        }
+      }),
 
     getAllUsers: asyncHandler(async (req, res) => {
         try {
