@@ -1,9 +1,9 @@
 import axios from "axios";
 import { BASE_URL } from "../Utiles/Url";
 
-export const getVirtualId = async (token) => {
+export const getVirtualId= async (token) => {
   try {
-    const response = await axios.get(`${BASE_URL}/api/virtualid`, {
+    const response = await axios.get(`${BASE_URL}/id-card`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;

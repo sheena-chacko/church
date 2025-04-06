@@ -40,7 +40,6 @@ import VicarDashboard from './Components/VicarDashboard';
 import VicarLogin from './Pages/VicarLogin';
 import ParishList from './Pages/ParishList';
 import QuizForms from './Pages/QuizForms';
-import Virtualid from './Pages/VirtualID';
 import BloodDonationPage from './Pages/BloodDonationPage';
 import FamilyUnitForm from './Pages/FamilyUnitForm';
 import PastVicars from './Pages/Past Vicars.jsx';
@@ -49,6 +48,10 @@ import ViewBloodDonationPage from './Pages/ViewBloodDonationPage.jsx';
 import FamilyUnitView from './Pages/FamilyUnitView.jsx';
 import FinancialReport from './Pages/FinancialReports';
 import VerifyUsers from './Pages/VerifyUsers.jsx';
+import Virtualid from './Pages/VirtualID.jsx';
+import Event from './Pages/Event.jsx';
+import ViewEvents from './Pages/ViewEvents.jsx';
+// import Virtualid from './Pages/Virtualid.jsx';
 // import ParishMemberPage from './Pages/ParishMemberPage.jsx';
 // import BloodDonationList from './Pages/BloodDonationList';
 
@@ -102,6 +105,7 @@ function App() {
         <Route path="/quiz-result" element={<><QuizResult/></>} />
         <Route path="/add" element={<><UserNavbar/><AddPetition /><Footer/></>} />
         <Route path="/view" element={<><UserNavbar/><ViewPetitions /><Footer/></>} />
+        <Route path="/view-events" element={<><UserNavbar/><ViewEvents /><Footer/></>} />
 
         {/* Admin Routes */}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
@@ -128,6 +132,8 @@ function App() {
         <Route path="/vicar-dashboard" element={<VicarDashboard />} />
 <Route path="/view" element={<ViewPetitions />} />
 <Route path="/vicar-login" element={<VicarLogin />} />
+<Route path="/event" element={<Event />} />
+
 
 </Routes>
     </BrowserRouter>

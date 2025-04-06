@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FileText, FileSearch, Home } from "lucide-react";
+import { FileText, FileSearch, Home, CalendarPlus } from "lucide-react";
 
 const VicarDashboard = () => {
   return (
@@ -13,7 +13,6 @@ const VicarDashboard = () => {
           Vicar Dashboard
         </h1>
 
-        {/* Dashboard Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {/* Petitions */}
           <Link to="/view">
@@ -36,13 +35,25 @@ const VicarDashboard = () => {
               </p>
             </div>
           </Link>
-           {/* parish List */}
-           <Link to="/parish-list">
+
+          {/* Parish Directory */}
+          <Link to="/parish-list">
             <div className="p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 text-center">
               <FileSearch className="w-12 h-12 text-green-600 mx-auto mb-3" />
               <h3 className="text-xl font-semibold">View Parish Directory</h3>
               <p className="text-gray-600 text-sm mt-1">
                 Access Parish Members List.
+              </p>
+            </div>
+          </Link>
+
+          {/* Create Event */}
+          <Link to="/event">
+            <div className="p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 text-center">
+              <CalendarPlus className="w-12 h-12 text-purple-600 mx-auto mb-3" />
+              <h3 className="text-xl font-semibold">Create Event</h3>
+              <p className="text-gray-600 text-sm mt-1">
+                Add and manage upcoming church events.
               </p>
             </div>
           </Link>

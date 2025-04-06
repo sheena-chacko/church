@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
@@ -11,11 +11,13 @@ import QuizForm from "../Pages/QuizForm";
 import AdminReports from "../Pages/AdminReports";
 import ViewPetitions from "../Pages/ViewPetitions";
 import ParishDirectory from "../Pages/ParishDirectory";
-import FamilyUnitForm from "../Pages/FamilyUnitForm";
+import FamilyUnitForm from "../Pages/FamilyUnitForm"; // form
+import FamilyUnitView from "../Pages/FamilyUnitView"; // ✅ added view page
 import ImageGalleryUpload from "../Pages/ImageGalleryUpload";
 import QuizForms from "../Pages/QuizForms";
 import VerifyUsers from "../Pages/VerifyUsers";
-import ParishList from "../Pages/ParishList"; // import ParishList
+import ParishList from "../Pages/ParishList";
+import ViewEvents from "../Pages/ViewEvents";
 
 const AdminDashboard = () => {
   const [userDropdown, setUserDropdown] = useState(false);
@@ -31,12 +33,13 @@ const AdminDashboard = () => {
   const [showAddQuiz, setShowAddQuiz] = useState(false);
   const [showBloodDonors, setShowBloodDonors] = useState(false);
   const [showVerifyUsers, setShowVerifyUsers] = useState(false);
+  const [showViewEvents, setShowViewEvents] = useState(false);
+  const [showParishList, setShowParishList] = useState(false);
+  const [showFamilyUnitView, setShowFamilyUnitView] = useState(false); // ✅ added view state
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const isParishListRoute = location.pathname === "/parish-list";
 
   const handleLogout = () => {
     dispatch(logout());
@@ -58,11 +61,21 @@ const AdminDashboard = () => {
     setShowPetitions(false);
     setShowParishDirectory(false);
     setShowFamilyUnit(false);
+    setShowFamilyUnitView(false); // ✅ reset view state
     setShowImageGallery(false);
     setShowAddQuiz(false);
     setShowBloodDonors(false);
     setShowVerifyUsers(false);
+    setShowViewEvents(false);
+    setShowParishList(false);
   };
+
+  useEffect(() => {
+    if (location.pathname === "/parish-list") {
+      resetViews();
+      setShowParishList(true);
+    }
+  }, [location.pathname]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
@@ -83,47 +96,26 @@ const AdminDashboard = () => {
               </button>
               {userDropdown && (
                 <div className="ml-5 space-y-2">
-                  <button
-                    className="block p-2 w-full text-left hover:bg-gray-700 rounded"
-                    onClick={() => {
-                      resetViews();
-                      setShowVerifyUsers(true);
-                    }}
-                  >
+                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowVerifyUsers(true); }}>
                     All Users
                   </button>
-                  <button
-                    className="block p-2 w-full text-left hover:bg-gray-700 rounded"
-                    onClick={() => {
-                      resetViews();
-                      setShowBloodDonors(true);
-                    }}
-                  >
+                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowBloodDonors(true); }}>
                     Blood Donors
                   </button>
-                  <button
-                    className="block p-2 w-full text-left hover:bg-gray-700 rounded"
-                    onClick={() => {
-                      resetViews();
-                      setShowVirtualID(true);
-                    }}
-                  >
+                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowVirtualID(true); }}>
                     Virtual ID
                   </button>
-                  <button
-                    className="block p-2 w-full text-left hover:bg-gray-700 rounded"
-                    onClick={() => navigate("/parish-list")}
-                  >
+                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowParishDirectory(true); }}>
                     Parish Directory
                   </button>
-                  <button
-                    className="block p-2 w-full text-left hover:bg-gray-700 rounded"
-                    onClick={() => {
-                      resetViews();
-                      setShowFamilyUnit(true);
-                    }}
-                  >
-                    Family Unit
+                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowFamilyUnit(true); }}>
+                    Add Family Unit
+                  </button>
+                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowFamilyUnitView(true); }}>
+                    View Family Unit {/* ✅ this line shows your view page */}
+                  </button>
+                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowParishList(true); }}>
+                    Parish List
                   </button>
                 </div>
               )}
@@ -142,6 +134,7 @@ const AdminDashboard = () => {
                   <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowQuiz(true); }}>Quizzes</button>
                   <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowPetitions(true); }}>View Petitions</button>
                   <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowAddQuiz(true); }}>Add Quiz</button>
+                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowViewEvents(true); }}>View Events</button>
                 </div>
               )}
             </div>
@@ -171,7 +164,8 @@ const AdminDashboard = () => {
           </div>
 
           <div className="p-6 flex-1">
-            {isParishListRoute ? <ParishList /> : (
+            {showParishList && <ParishList />}
+            {!showParishList && (
               <>
                 {showVirtualID && <VirtualID />}
                 {showQuiz && <QuizForm />}
@@ -179,9 +173,11 @@ const AdminDashboard = () => {
                 {showPetitions && <ViewPetitions />}
                 {showParishDirectory && <ParishDirectory />}
                 {showFamilyUnit && <FamilyUnitForm />}
+                {showFamilyUnitView && <FamilyUnitView />} {/* ✅ renders view */}
                 {showImageGallery && <ImageGalleryUpload />}
                 {showAddQuiz && <QuizForms />}
                 {showVerifyUsers && <VerifyUsers />}
+                {showViewEvents && <ViewEvents />}
 
                 {showBloodDonors && (
                   <div className="bg-white p-6 rounded-lg shadow-lg border border-red-300 mt-6">
