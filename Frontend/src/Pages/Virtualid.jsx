@@ -1,133 +1,121 @@
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from 'react';
+import { getVirtualId } from '../Services/VirtualidService';
+import { getuserToken } from '../Utiles/storageHandler';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const Virtualid = () => {
-  const [member, setMember] = useState({
-    name: "",
-    dob: "",
-    housename: "",
-    photo: null,
-  });
-
+  const [virtualIdData, setVirtualIdData] = useState(null);
+  const [photoBase64, setPhotoBase64] = useState('');
+  const [error, setError] = useState('');
   const cardRef = useRef();
 
-  const handleChange = (e) => {
-    setMember({ ...member, [e.target.name]: e.target.value });
+  useEffect(() => {
+    const fetchVirtualId = async () => {
+      try {
+        const token = getuserToken();
+        const data = await getVirtualId(token);
+        setVirtualIdData(data);
+        setError('');
+
+        if (data.photo) {
+          const response = await fetch(data.photo);
+          const blob = await response.blob();
+
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setPhotoBase64(reader.result); // Base64 string
+          };
+          reader.readAsDataURL(blob);
+        }
+
+      } catch (err) {
+        console.error(err);
+        setError(err?.response?.data?.message || 'Virtual ID not found.');
+      }
+    };
+
+    fetchVirtualId();
+  }, []);
+
+  const handleDownload = async () => {
+    const element = cardRef.current;
+    const canvas = await html2canvas(element);
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF();
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save('VirtualID.pdf');
   };
 
-  const handlePhotoUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setMember({ ...member, photo: reader.result });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleDownloadPDF = async () => {
-    const input = cardRef.current;
-
-    const html2canvas = await import("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js")
-      .then((module) => module.default)
-      .catch((err) => console.error("Error loading html2canvas:", err));
-
-    const { jsPDF } = await import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js")
-      .then((module) => module)
-      .catch((err) => console.error("Error loading jsPDF:", err));
-
-    if (html2canvas && jsPDF) {
-      html2canvas(input).then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF("p", "mm", "a4");
-        pdf.addImage(imgData, "PNG", 10, 10, 90, 0);
-        pdf.save("Church_ID_Card.pdf");
-      });
-    }
-  };
+  if (error) return <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>;
+  if (!virtualIdData) return <p style={{ textAlign: 'center' }}>Loading Virtual ID...</p>;
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
-      <div className="bg-white p-8 rounded-2xl shadow-2xl w-96 border border-blue-300">
-        <div className="text-center mb-5">
-          <h2 className="text-3xl font-bold text-blue-700">Church ID Card</h2>
-          <p className="text-sm text-gray-500">Official Member Identification</p>
-        </div>
+    <div style={{ textAlign: 'center', marginTop: '30px' }}>
+      <div
+        ref={cardRef}
+        style={{
+          width: '340px',
+          margin: '0 auto',
+          padding: '20px',
+          border: '2px solid #0d6efd',
+          borderRadius: '12px',
+          backgroundColor: '#f0faff',
+          fontFamily: 'Arial, sans-serif',
+          boxShadow: '0 6px 18px rgba(0, 0, 0, 0.15)',
+        }}
+      >
+        <h3 style={{ color: '#0d6efd', marginBottom: '18px' }}>Virtual ID Card</h3>
 
-        <div className="flex flex-col items-center mb-4">
-          <div className="w-28 h-28 border-4 border-blue-400 rounded-full overflow-hidden shadow-lg">
+        {photoBase64 && (
+          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
             <img
-              src={member.photo || "/person.jpeg"} 
+              src={photoBase64}
               alt="Profile"
-              className="w-full h-full object-cover"
+              style={{
+                width: '110px',
+                height: '110px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: '4px solid #0d6efd',
+                boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)',
+                display: 'block',
+                margin: '0 auto',
+              }}
             />
-          </div>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handlePhotoUpload}
-            className="mt-3 text-sm text-gray-600"
-          />
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <label className="block text-gray-700 font-medium">Full Name</label>
-            <input
-              type="text"
-              name="name"
-              value={member.name}
-              onChange={handleChange}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-medium">Date of Birth</label>
-            <input
-              type="date"
-              name="dob"
-              value={member.dob}
-              onChange={handleChange}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-medium">House Name</label>
-            <input
-              type="text"
-              name="housename"
-              value={member.housename}
-              onChange={handleChange}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
-            />
-          </div>
-        </div>
-
-        {member.name && (
-          <div ref={cardRef} className="mt-5 p-4 bg-blue-500 text-white rounded-md shadow-md text-center">
-            <h3 className="text-lg font-semibold mb-2">Church Member ID</h3>
-            <div className="flex flex-col items-center">
-              <img
-                src={member.photo || "/person.jpeg"}
-                alt="Profile"
-                className="w-16 h-16 object-cover rounded-md border-2 border-white shadow-lg"
-              />
-              <p className="text-lg font-bold mt-2">{member.name}</p>
-              <p className="text-sm font-semibold">DOB: {member.dob}</p>
-              <p className="text-sm font-semibold">House Name: {member.housename}</p>
-            </div>
+            <p style={{ marginTop: '10px', fontSize: '14px', color: '#555' }}>Profile Photo</p>
           </div>
         )}
 
-        <button
-          onClick={handleDownloadPDF}
-          className="w-full mt-5 bg-blue-600 text-white p-3 rounded-md hover:bg-blue-800 transition duration-300 shadow-md"
-        >
-          Download ID Card as PDF
-        </button>
+        <p><strong>Name:</strong> {virtualIdData.fullName}</p>
+        <p><strong>DOB:</strong> {new Date(virtualIdData.dateOfBirth).toLocaleDateString()}</p>
+        <p><strong>Age:</strong> {virtualIdData.age}</p>
+        <p><strong>Contact:</strong> {virtualIdData.contactNumber}</p>
+        <p><strong>Blood Group:</strong> {virtualIdData.bloodType || 'N/A'}</p>
+        <p><strong>Unique ID:</strong> {virtualIdData.uniqueID}</p>
       </div>
+
+      <button
+        onClick={handleDownload}
+        style={{
+          marginTop: '25px',
+          padding: '10px 24px',
+          fontSize: '16px',
+          backgroundColor: '#0d6efd',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '8px',
+          cursor: 'pointer',
+          transition: '0.3s ease',
+        }}
+        onMouseOver={e => e.target.style.backgroundColor = '#0b5ed7'}
+        onMouseOut={e => e.target.style.backgroundColor = '#0d6efd'}
+      >
+        Download as PDF
+      </button>
     </div>
   );
 };

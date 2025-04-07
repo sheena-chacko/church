@@ -1,18 +1,27 @@
-import React, { useState } from "react";
-import { FaHandHoldingHeart, FaSearch } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { FaHandHoldingHeart } from "react-icons/fa";
+import axios from "axios";
+
+const BASE_URL = "http://localhost:5000/api/v1"; // Replace with your backend URL
 
 const DonatorsList = () => {
-  const [search, setSearch] = useState("");
+  const [donators, setDonators] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const donators = [
-    { id: 1, name: "John Doe", amount: "$500", date: "2024-02-01"},
-    { id: 2, name: "Jane Smith", amount: "$300", date: "2024-02-10" },
-    { id: 3, name: "Michael Johnson", amount: "$700", date: "2024-02-15" },
-  ];
+  useEffect(() => {
+    const fetchDonators = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/donation`);
+        setDonators(res.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching donations:", error);
+        setLoading(false);
+      }
+    };
 
-  const filteredDonators = donators.filter((donator) =>
-    donator.name.toLowerCase().includes(search.toLowerCase())
-  );
+    fetchDonators();
+  }, []);
 
   return (
     <div className="bg-gray-100 min-h-screen py-12 px-4 flex justify-center">
@@ -24,50 +33,42 @@ const DonatorsList = () => {
           We appreciate the generosity of our donors who contribute to the church’s mission.
         </p>
 
-        <div className="mb-6 flex justify-center items-center gap-2">
-          <input
-            type="text"
-            placeholder="Search donor..."
-            className="border border-gray-300 rounded-lg px-4 py-2 w-2/3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
-            <FaSearch />
-          </button>
-        </div>
-
         <div className="overflow-x-auto">
-          <table className="w-full bg-gray-50 border border-gray-200 shadow-md rounded-lg">
-            <thead className="bg-yellow-600 text-white">
-              <tr>
-                <th className="py-3 px-6 text-left">Name</th>
-                <th className="py-3 px-6 text-left">Amount</th>
-                <th className="py-3 px-6 text-left">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredDonators.length > 0 ? (
-                filteredDonators.map((donator, index) => (
-                  <tr
-                    key={donator.id}
-                    className={`border-b ${index % 2 === 0 ? "bg-gray-100" : "bg-white"} hover:bg-yellow-100 transition`}
-                  >
-                    <td className="py-4 px-6 font-medium text-gray-800">{donator.name}</td>
-                    <td className="py-4 px-6 font-semibold text-green-700">{donator.amount}</td>
-                    <td className="py-4 px-6 text-gray-600">{donator.date}</td>
-                    <td className="py-4 px-6 font-semibold text-red-600">{donator.bloodGroup}</td>
-                  </tr>
-                ))
-              ) : (
+          {loading ? (
+            <p className="text-center text-gray-500">Loading donors...</p>
+          ) : (
+            <table className="w-full bg-gray-50 border border-gray-200 shadow-md rounded-lg">
+              <thead className="bg-yellow-600 text-white">
                 <tr>
-                  <td colSpan="4" className="text-center py-4 text-gray-500">
-                    No donors found.
-                  </td>
+                  <th className="py-3 px-6 text-left">Name</th>
+                  <th className="py-3 px-6 text-left">Amount</th>
+                  <th className="py-3 px-6 text-left">Message</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {donators.length > 0 ? (
+                  donators.map((donator, index) => (
+                    <tr
+                      key={donator._id}
+                      className={`border-b ${index % 2 === 0 ? "bg-gray-100" : "bg-white"} hover:bg-yellow-100 transition`}
+                    >
+                      <td className="py-4 px-6 font-medium text-gray-800">{donator.name}</td>
+                      <td className="py-4 px-6 font-semibold text-green-700">${donator.amount}</td>
+                      <td className="py-4 px-6 text-gray-600">
+                        {donator.message || "—"}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="3" className="text-center py-4 text-gray-500">
+                      No donors found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>

@@ -1,17 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import { createPetitionAPI } from '../Services/PetitionService';
-import { useNavigate } from 'react-router-dom';
 
 const AddPetition = () => {
+    const queryClient = useQueryClient();
+    const [successMessage, setSuccessMessage] = useState('');
 
-    const queryClient = useQueryClient()
-    const navigate = useNavigate()
     const mutation = useMutation({
         mutationFn: createPetitionAPI,
+        onSuccess: () => {
+            queryClient.invalidateQueries('view-my-petition');
+            setSuccessMessage('Your petition has been submitted successfully!');
+        }
     });
 
     const formik = useFormik({
@@ -23,12 +25,10 @@ const AddPetition = () => {
             title: Yup.string().required('Title is required'),
             description: Yup.string().required('Description is required')
         }),
-        onSubmit: (values,{resetForm}) => {
-            mutation.mutateAsync(values).then((data)=>{
-                queryClient.invalidateQueries('view-my-petition')
-                navigate("/view")
-
-            })
+        onSubmit: (values, { resetForm }) => {
+            mutation.mutateAsync(values).then(() => {
+                resetForm();
+            });
         }
     });
 
@@ -36,6 +36,7 @@ const AddPetition = () => {
         <div className="flex justify-center items-center min-h-screen bg-cover bg-center p-4" style={{ backgroundImage: "url('/petition.jpg')" }}>
             <div className="max-w-md w-full bg-white bg-opacity-90 p-10 rounded-2xl shadow-xl border border-yellow-500">
                 <h2 className="text-3xl font-extrabold text-center text-yellow-500 mb-6">Submit a Petition</h2>
+
                 <form onSubmit={formik.handleSubmit} className="space-y-6">
                     <div>
                         <label className="block text-gray-700 font-medium">Title</label>
@@ -47,7 +48,9 @@ const AddPetition = () => {
                             onBlur={formik.handleBlur}
                             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
                         />
-                        {formik.touched.title && formik.errors.title ? <div className="text-red-500 text-sm">{formik.errors.title}</div> : null}
+                        {formik.touched.title && formik.errors.title && (
+                            <div className="text-red-500 text-sm">{formik.errors.title}</div>
+                        )}
                     </div>
                     <div>
                         <label className="block text-gray-700 font-medium">Description</label>
@@ -59,7 +62,9 @@ const AddPetition = () => {
                             rows="4"
                             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
                         ></textarea>
-                        {formik.touched.description && formik.errors.description ? <div className="text-red-500 text-sm">{formik.errors.description}</div> : null}
+                        {formik.touched.description && formik.errors.description && (
+                            <div className="text-red-500 text-sm">{formik.errors.description}</div>
+                        )}
                     </div>
                     <button
                         type="submit"
@@ -68,6 +73,12 @@ const AddPetition = () => {
                         {mutation.isLoading ? 'Submitting...' : 'Submit Petition'}
                     </button>
                 </form>
+
+                {successMessage && (
+                    <div className="mt-6 text-green-600 font-medium text-center">
+                        ✅ {successMessage}
+                    </div>
+                )}
             </div>
         </div>
     );

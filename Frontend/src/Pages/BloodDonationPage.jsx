@@ -1,16 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { getuserToken } from '../Utiles/storageHandler'; // Use correct path
+import { getuserToken, getDecodeData } from '../Utiles/storageHandler';
 
-const BASE_URL = "http://localhost:5000/api/v1"; // Adjust as needed
+const BASE_URL = "http://localhost:5000/api/v1";
 
+// API to add blood donor
 const addBloodDonorAPI = async (data) => {
-    const token = getuserToken(); // Use storageHandler to get token
-
+    const token = getuserToken();
     if (!token) throw new Error("Unauthorized: No token found");
 
     const response = await axios.post(`${BASE_URL}/blood-donor`, data, {
@@ -20,15 +20,44 @@ const addBloodDonorAPI = async (data) => {
     return response.data;
 };
 
+// API to fetch user profile
+const fetchUserProfile = async (userId, token) => {
+    const response = await axios.get(`${BASE_URL}/users/profile/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+};
+
 const BloodDonationPage = () => {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
-    
+
+    const token = getuserToken();
+    const decoded = getDecodeData();
+
+    const [initialContact, setInitialContact] = useState('');
+
+    // Fetch user's contact number when component mounts
+    useEffect(() => {
+        const loadProfile = async () => {
+            try {
+                const data = await fetchUserProfile(decoded.id, token);
+                if (data?.contactNumber) {
+                    setInitialContact(data.contactNumber);
+                }
+            } catch (error) {
+                console.error("Failed to fetch profile:", error);
+            }
+        };
+
+        loadProfile();
+    }, [decoded.id, token]);
+
     const mutation = useMutation({
         mutationFn: addBloodDonorAPI,
         onSuccess: () => {
             queryClient.invalidateQueries('blood-donors');
-            navigate('/view-blooddonation'); // Redirect to donor list
+            navigate('/view-blooddonation');
         },
         onError: (error) => {
             console.error("Submission error:", error);
@@ -36,9 +65,10 @@ const BloodDonationPage = () => {
     });
 
     const formik = useFormik({
+        enableReinitialize: true,
         initialValues: {
             bloodType: '',
-            contactNumber: ''
+            contactNumber: initialContact
         },
         validationSchema: Yup.object({
             bloodType: Yup.string().required('Blood type is required'),
@@ -98,9 +128,10 @@ const BloodDonationPage = () => {
                         ) : null}
                     </div>
 
-                    {/* Display API errors */}
                     {mutation.isError && (
-                        <div className="text-red-600 text-center">Error: {mutation.error?.message || 'Something went wrong'}</div>
+                        <div className="text-red-600 text-center">
+                            Error: {mutation.error?.message || 'Something went wrong'}
+                        </div>
                     )}
 
                     <button

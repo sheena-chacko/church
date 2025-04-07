@@ -21,7 +21,7 @@ const UserNavbar = () => {
         </div>
         <ul className="flex space-x-6">
           <li><Link to="/user-home" className="hover:text-yellow-400 transition">Dashboard</Link></li>
-          {/* <li><Link to="/profile" className="hover:text-yellow-400 transition">Profile</Link></li> */}
+          <li><Link to="/profile-form" className="hover:text-yellow-400 transition">Update Profile</Link></li>
           <li><Link to="/view-events" className="hover:text-yellow-400 transition">Events</Link></li>
   
           <li><Link to="/settings" className="hover:text-yellow-400 transition">Settings</Link></li>
@@ -30,7 +30,7 @@ const UserNavbar = () => {
           <li><Link to="/parish-directory" className="hover:text-yellow-400 transition">Parish Directory</Link></li>
           <li><Link to="/reports" className="hover:text-yellow-400 transition">Reports</Link></li>
           <li><Link to="/donators-list" className="hover:text-yellow-400 transition">Donators List</Link></li>
-          <li><Link to="/gallery" className="hover:text-yellow-400 transition"> Gallery</Link></li>
+          {/* <li><Link to="/gallery" className="hover:text-yellow-400 transition"> Gallery</Link></li> */}
           <li><Link to="/quiz-form" className="hover:text-yellow-400 transition"> View Quizz Form</Link></li>
           <li><Link to="/add" className="hover:text-yellow-400 transition">Petition</Link></li>
           {/* <li><Link to="/view" className="hover:text-yellow-400 transition">View Petition</Link></li> */}

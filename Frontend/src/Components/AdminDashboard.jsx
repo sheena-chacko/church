@@ -6,36 +6,31 @@ import { logout } from "../Redux/UserSlice";
 import { getDecodeData } from "../Utiles/storageHandler";
 import { getBloodDonorsAPI } from "../Services/bloodDonarService";
 
-import VirtualID from "../Pages/VirtualID";
-import QuizForm from "../Pages/QuizForm";
+// Page imports (Removed VirtualID, QuizForm, and QuizForms)
 import AdminReports from "../Pages/AdminReports";
 import ViewPetitions from "../Pages/ViewPetitions";
-import ParishDirectory from "../Pages/ParishDirectory";
-import FamilyUnitForm from "../Pages/FamilyUnitForm"; // form
-import FamilyUnitView from "../Pages/FamilyUnitView"; // ✅ added view page
+import FamilyUnitForm from "../Pages/FamilyUnitForm";
+import FamilyUnitView from "../Pages/FamilyUnitView";
 import ImageGalleryUpload from "../Pages/ImageGalleryUpload";
-import QuizForms from "../Pages/QuizForms";
 import VerifyUsers from "../Pages/VerifyUsers";
 import ParishList from "../Pages/ParishList";
 import ViewEvents from "../Pages/ViewEvents";
+import DonatorsList from "../Pages/DonatorsList";
 
 const AdminDashboard = () => {
   const [userDropdown, setUserDropdown] = useState(false);
   const [reportsDropdown, setReportsDropdown] = useState(false);
 
-  const [showVirtualID, setShowVirtualID] = useState(false);
-  const [showQuiz, setShowQuiz] = useState(false);
   const [showReports, setShowReports] = useState(false);
   const [showPetitions, setShowPetitions] = useState(false);
-  const [showParishDirectory, setShowParishDirectory] = useState(false);
   const [showFamilyUnit, setShowFamilyUnit] = useState(false);
   const [showImageGallery, setShowImageGallery] = useState(false);
-  const [showAddQuiz, setShowAddQuiz] = useState(false);
   const [showBloodDonors, setShowBloodDonors] = useState(false);
   const [showVerifyUsers, setShowVerifyUsers] = useState(false);
   const [showViewEvents, setShowViewEvents] = useState(false);
   const [showParishList, setShowParishList] = useState(false);
-  const [showFamilyUnitView, setShowFamilyUnitView] = useState(false); // ✅ added view state
+  const [showFamilyUnitView, setShowFamilyUnitView] = useState(false);
+  const [showDonatorsList, setShowDonatorsList] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -55,19 +50,16 @@ const AdminDashboard = () => {
   const decodedUser = getDecodeData();
 
   const resetViews = () => {
-    setShowVirtualID(false);
-    setShowQuiz(false);
     setShowReports(false);
     setShowPetitions(false);
-    setShowParishDirectory(false);
     setShowFamilyUnit(false);
-    setShowFamilyUnitView(false); // ✅ reset view state
+    setShowFamilyUnitView(false);
     setShowImageGallery(false);
-    setShowAddQuiz(false);
     setShowBloodDonors(false);
     setShowVerifyUsers(false);
     setShowViewEvents(false);
     setShowParishList(false);
+    setShowDonatorsList(false);
   };
 
   useEffect(() => {
@@ -102,17 +94,11 @@ const AdminDashboard = () => {
                   <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowBloodDonors(true); }}>
                     Blood Donors
                   </button>
-                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowVirtualID(true); }}>
-                    Virtual ID
-                  </button>
-                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowParishDirectory(true); }}>
-                    Parish Directory
-                  </button>
                   <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowFamilyUnit(true); }}>
                     Add Family Unit
                   </button>
                   <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowFamilyUnitView(true); }}>
-                    View Family Unit {/* ✅ this line shows your view page */}
+                    View Family Unit
                   </button>
                   <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowParishList(true); }}>
                     Parish List
@@ -131,9 +117,7 @@ const AdminDashboard = () => {
               {reportsDropdown && (
                 <div className="ml-5 space-y-2">
                   <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowReports(true); }}>View Reports</button>
-                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowQuiz(true); }}>Quizzes</button>
                   <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowPetitions(true); }}>View Petitions</button>
-                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowAddQuiz(true); }}>Add Quiz</button>
                   <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowViewEvents(true); }}>View Events</button>
                 </div>
               )}
@@ -147,6 +131,16 @@ const AdminDashboard = () => {
               }}
             >
               🖼️ <span>Image Upload Gallery</span>
+            </button>
+
+            <button
+              className="flex items-center space-x-3 p-3 hover:bg-gray-700 rounded w-full text-left"
+              onClick={() => {
+                resetViews();
+                setShowDonatorsList(true);
+              }}
+            >
+              💝 <span>Donators List</span>
             </button>
           </nav>
         </div>
@@ -167,17 +161,14 @@ const AdminDashboard = () => {
             {showParishList && <ParishList />}
             {!showParishList && (
               <>
-                {showVirtualID && <VirtualID />}
-                {showQuiz && <QuizForm />}
                 {showReports && <AdminReports />}
                 {showPetitions && <ViewPetitions />}
-                {showParishDirectory && <ParishDirectory />}
                 {showFamilyUnit && <FamilyUnitForm />}
-                {showFamilyUnitView && <FamilyUnitView />} {/* ✅ renders view */}
+                {showFamilyUnitView && <FamilyUnitView />}
                 {showImageGallery && <ImageGalleryUpload />}
-                {showAddQuiz && <QuizForms />}
                 {showVerifyUsers && <VerifyUsers />}
                 {showViewEvents && <ViewEvents />}
+                {showDonatorsList && <DonatorsList />}
 
                 {showBloodDonors && (
                   <div className="bg-white p-6 rounded-lg shadow-lg border border-red-300 mt-6">
