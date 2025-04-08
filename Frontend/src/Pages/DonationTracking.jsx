@@ -1,163 +1,92 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+const BASE_URL = "http://localhost:5000/api/v1"; // Your API base URL
 
 const DonationTracking = () => {
   const [donations, setDonations] = useState([]);
-  const [donor, setDonor] = useState("");
-  const [date, setDate] = useState("");
-  const [amount, setAmount] = useState("");
-  const [notes, setNotes] = useState("");
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const handleAddDonation = (e) => {
-    e.preventDefault();
-    if (!donor || !date || !amount) {
-      alert("Please fill in all required fields!");
-      return;
-    }
-
-    const newDonation = {
-      donor,
-      date,
-      amount: parseFloat(amount),
-      notes,
+  useEffect(() => {
+    const fetchDonations = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/donation`);
+        setDonations(res.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching donations:", error);
+        setLoading(false);
+      }
     };
 
-    setDonations([newDonation, ...donations]); // Newest donations first
-    setDonor("");
-    setDate("");
-    setAmount("");
-    setNotes("");
-  };
+    fetchDonations();
+  }, []);
 
   const handlePrint = () => {
     window.print();
   };
 
+  const filteredDonations = donations.filter((donation) =>
+    donation.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="bg-gray-100 min-h-screen p-6">
-      <div className="container mx-auto max-w-5xl bg-white p-6 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-blue-900 mb-6 text-center">
-          Donation Tracking
-        </h1>
+      <div className="container mx-auto max-w-6xl bg-white p-8 rounded-lg shadow-xl">
+        <h1 className="text-3xl font-bold text-center text-blue-900 mb-6">Donation Tracking</h1>
 
-        {/* Donation Form */}
-        <form
-          onSubmit={handleAddDonation}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4"
-        >
-          <input
-            type="text"
-            placeholder="Donor Name"
-            value={donor}
-            onChange={(e) => setDonor(e.target.value)}
-            className="border p-3 rounded w-full focus:ring-2 focus:ring-blue-500"
-            required
-          />
-
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="border p-3 rounded w-full focus:ring-2 focus:ring-blue-500"
-            required
-          />
-
-          <input
-            type="number"
-            placeholder="Donation Amount ($)"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="border p-3 rounded w-full focus:ring-2 focus:ring-blue-500"
-            required
-          />
-
-          <input
-            type="text"
-            placeholder="Notes (Optional)"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            className="border p-3 rounded w-full focus:ring-2 focus:ring-blue-500"
-          />
-
-          <div className="col-span-1 md:col-span-2 flex gap-4">
-            <button
-              type="submit"
-              className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition w-full"
-            >
-              Add Donation
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setDonor("");
-                setDate("");
-                setAmount("");
-                setNotes("");
-              }}
-              className="px-6 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition w-full"
-            >
-              Clear
-            </button>
-          </div>
-        </form>
-
-        {/* Search Donations */}
-        <div className="mt-6 flex justify-center">
+        {/* Search Bar */}
+        <div className="mb-6 text-center">
           <input
             type="text"
             placeholder="Search by donor name..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="border p-3 rounded w-full max-w-md focus:ring-2 focus:ring-blue-500"
+            className="border p-3 rounded-lg w-full max-w-md focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        {/* Donation List */}
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold text-blue-800 mb-4 text-center">
-            Donation Records
-          </h2>
-
-          {donations.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {donations
-                .filter((donation) =>
-                  donation.donor.toLowerCase().includes(search.toLowerCase())
-                )
-                .map((donation, index) => (
-                  <div
-                    key={index}
-                    className="bg-blue-50 p-4 rounded-lg shadow-md border-l-4 border-blue-500"
+        {/* Donation Table */}
+        <div className="overflow-x-auto">
+          {loading ? (
+            <p className="text-center text-gray-500">Loading donations...</p>
+          ) : filteredDonations.length > 0 ? (
+            <table className="w-full border border-gray-200 rounded-lg overflow-hidden">
+              <thead className="bg-blue-700 text-white">
+                <tr>
+                  <th className="px-6 py-3 text-left">Donor</th>
+                  <th className="px-6 py-3 text-left">Amount</th>
+                  <th className="px-6 py-3 text-left">Message</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredDonations.map((donation, index) => (
+                  <tr
+                    key={donation._id}
+                    className={`${index % 2 === 0 ? "bg-blue-50" : "bg-white"} border-b hover:bg-yellow-100 transition`}
                   >
-                    <p className="text-gray-600 text-sm">{donation.date}</p>
-                    <h3 className="text-lg font-bold text-blue-800">
-                      {donation.donor}
-                    </h3>
-                    <p className="text-gray-700 text-sm">
-                      {donation.notes || "No notes provided"}
-                    </p>
-                    <p className="text-blue-600 font-semibold mt-2 text-lg">
-                      ${donation.amount.toFixed(2)}
-                    </p>
-                  </div>
+                    <td className="px-6 py-4 font-medium text-gray-800">{donation.name}</td>
+                    <td className="px-6 py-4 text-green-700 font-semibold">${donation.amount}</td>
+                    <td className="px-6 py-4 text-gray-700">{donation.message || "—"}</td>
+                  </tr>
                 ))}
-            </div>
+              </tbody>
+            </table>
           ) : (
-            <p className="text-gray-600 text-center">
-              No donations recorded yet.
-            </p>
+            <p className="text-center text-gray-500">No matching donations found.</p>
           )}
         </div>
 
         {/* Print Button */}
-        <div className="flex justify-center mt-6">
+        {/* <div className="flex justify-center mt-8">
           <button
             onClick={handlePrint}
-            className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
           >
             Print Donation Records
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

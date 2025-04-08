@@ -6,7 +6,6 @@ import { logout } from "../Redux/UserSlice";
 import { getDecodeData } from "../Utiles/storageHandler";
 import { getBloodDonorsAPI } from "../Services/bloodDonarService";
 
-// Page imports (Removed VirtualID, QuizForm, and QuizForms)
 import AdminReports from "../Pages/AdminReports";
 import ViewPetitions from "../Pages/ViewPetitions";
 import FamilyUnitForm from "../Pages/FamilyUnitForm";
@@ -16,6 +15,9 @@ import VerifyUsers from "../Pages/VerifyUsers";
 import ParishList from "../Pages/ParishList";
 import ViewEvents from "../Pages/ViewEvents";
 import DonatorsList from "../Pages/DonatorsList";
+import ViewExpense from "../Pages/ViewExpense";
+import ViewIncome from "../Pages/ViewIncome";
+import ViewBalanceSheet from "../Pages/ViewBalanceSheet";
 
 const AdminDashboard = () => {
   const [userDropdown, setUserDropdown] = useState(false);
@@ -24,13 +26,16 @@ const AdminDashboard = () => {
   const [showReports, setShowReports] = useState(false);
   const [showPetitions, setShowPetitions] = useState(false);
   const [showFamilyUnit, setShowFamilyUnit] = useState(false);
+  const [showFamilyUnitView, setShowFamilyUnitView] = useState(false);
   const [showImageGallery, setShowImageGallery] = useState(false);
   const [showBloodDonors, setShowBloodDonors] = useState(false);
   const [showVerifyUsers, setShowVerifyUsers] = useState(false);
   const [showViewEvents, setShowViewEvents] = useState(false);
   const [showParishList, setShowParishList] = useState(false);
-  const [showFamilyUnitView, setShowFamilyUnitView] = useState(false);
   const [showDonatorsList, setShowDonatorsList] = useState(false);
+  const [showViewExpense, setShowViewExpense] = useState(false);
+  const [showViewIncome, setShowViewIncome] = useState(false);
+  const [showViewBalanceSheet, setShowViewBalanceSheet] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -60,6 +65,9 @@ const AdminDashboard = () => {
     setShowViewEvents(false);
     setShowParishList(false);
     setShowDonatorsList(false);
+    setShowViewExpense(false);
+    setShowViewIncome(false);
+    setShowViewBalanceSheet(false);
   };
 
   useEffect(() => {
@@ -80,38 +88,22 @@ const AdminDashboard = () => {
             </Link>
 
             <div>
-              <button
-                onClick={() => setUserDropdown(!userDropdown)}
-                className="flex justify-between w-full p-3 hover:bg-gray-700 rounded"
-              >
+              <button onClick={() => setUserDropdown(!userDropdown)} className="flex justify-between w-full p-3 hover:bg-gray-700 rounded">
                 <span className="flex items-center space-x-3">👥 <span>User Management</span></span> ▼
               </button>
               {userDropdown && (
                 <div className="ml-5 space-y-2">
-                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowVerifyUsers(true); }}>
-                    All Users
-                  </button>
-                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowBloodDonors(true); }}>
-                    Blood Donors
-                  </button>
-                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowFamilyUnit(true); }}>
-                    Add Family Unit
-                  </button>
-                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowFamilyUnitView(true); }}>
-                    View Family Unit
-                  </button>
-                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowParishList(true); }}>
-                    Parish List
-                  </button>
+                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowVerifyUsers(true); }}>All Users</button>
+                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowBloodDonors(true); }}>Blood Donors</button>
+                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowFamilyUnit(true); }}>Add Family Unit</button>
+                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowFamilyUnitView(true); }}>View Family Unit</button>
+                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowParishList(true); }}>Parish List</button>
                 </div>
               )}
             </div>
 
             <div>
-              <button
-                onClick={() => setReportsDropdown(!reportsDropdown)}
-                className="flex justify-between w-full p-3 hover:bg-gray-700 rounded"
-              >
+              <button onClick={() => setReportsDropdown(!reportsDropdown)} className="flex justify-between w-full p-3 hover:bg-gray-700 rounded">
                 <span className="flex items-center space-x-3">📄 <span>Reports</span></span> ▼
               </button>
               {reportsDropdown && (
@@ -123,23 +115,11 @@ const AdminDashboard = () => {
               )}
             </div>
 
-            <button
-              className="flex items-center space-x-3 p-3 hover:bg-gray-700 rounded w-full text-left"
-              onClick={() => {
-                resetViews();
-                setShowImageGallery(true);
-              }}
-            >
+            <button className="flex items-center space-x-3 p-3 hover:bg-gray-700 rounded w-full text-left" onClick={() => { resetViews(); setShowImageGallery(true); }}>
               🖼️ <span>Image Upload Gallery</span>
             </button>
 
-            <button
-              className="flex items-center space-x-3 p-3 hover:bg-gray-700 rounded w-full text-left"
-              onClick={() => {
-                resetViews();
-                setShowDonatorsList(true);
-              }}
-            >
+            <button className="flex items-center space-x-3 p-3 hover:bg-gray-700 rounded w-full text-left" onClick={() => { resetViews(); setShowDonatorsList(true); }}>
               💝 <span>Donators List</span>
             </button>
           </nav>
@@ -161,7 +141,7 @@ const AdminDashboard = () => {
             {showParishList && <ParishList />}
             {!showParishList && (
               <>
-                {showReports && <AdminReports />}
+                {showReports && <AdminReports setShowViewExpense={setShowViewExpense} setShowViewIncome={setShowViewIncome} setShowViewBalanceSheet={setShowViewBalanceSheet} />}
                 {showPetitions && <ViewPetitions />}
                 {showFamilyUnit && <FamilyUnitForm />}
                 {showFamilyUnitView && <FamilyUnitView />}
@@ -169,7 +149,9 @@ const AdminDashboard = () => {
                 {showVerifyUsers && <VerifyUsers />}
                 {showViewEvents && <ViewEvents />}
                 {showDonatorsList && <DonatorsList />}
-
+                {showViewExpense && (<><button onClick={() => { resetViews(); setShowReports(true); }} className="text-blue-600 underline mb-4">← Back to Reports</button><ViewExpense /></>)}
+                {showViewIncome && (<><button onClick={() => { resetViews(); setShowReports(true); }} className="text-blue-600 underline mb-4">← Back to Reports</button><ViewIncome /></>)}
+                {showViewBalanceSheet && (<><button onClick={() => { resetViews(); setShowReports(true); }} className="text-blue-600 underline mb-4">← Back to Reports</button><ViewBalanceSheet /></>)}
                 {showBloodDonors && (
                   <div className="bg-white p-6 rounded-lg shadow-lg border border-red-300 mt-6">
                     <h2 className="text-2xl font-bold text-red-500 mb-4">Blood Donors List</h2>

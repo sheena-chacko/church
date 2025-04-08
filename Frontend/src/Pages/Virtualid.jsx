@@ -40,13 +40,18 @@ const Virtualid = () => {
 
   const handleDownload = async () => {
     const element = cardRef.current;
-    const canvas = await html2canvas(element);
+    const canvas = await html2canvas(element, { scale: 2 }); // better quality
     const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF();
+
     const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfWidth = 100; // mm - reduced size
     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+    const x = (pdf.internal.pageSize.getWidth() - pdfWidth) / 2;
+    const y = 30;
+
+    pdf.addImage(imgData, 'PNG', x, y, pdfWidth, pdfHeight);
     pdf.save('VirtualID.pdf');
   };
 

@@ -3,6 +3,9 @@ import BalanceSheet from "../Pages/BalanceSheet";
 import ExpenseManagement from "../Pages/ExpenseManagement";
 import IncomeStatements from "../Pages/IncomeStatements";
 import FinancialReports from "../Pages/FinancialReports";
+import ViewExpense from "./ViewExpense";
+import ViewIncome from "./ViewIncome";
+import ViewBalanceSheet from "./ViewBalanceSheet";
 
 const AdminReports = () => {
   const [showContent, setShowContent] = useState(null);
@@ -21,9 +24,9 @@ const AdminReports = () => {
 
   return (
     <div className="p-6 bg-white shadow rounded-lg">
-      {showContent === "BalanceSheet" && <BalanceSheet />}
-      {showContent === "ExpenseManagement" && <ExpenseManagement />}
-      {showContent === "IncomeStatements" && <IncomeStatements />}
+      {showContent === "BalanceSheet" && <ViewBalanceSheet />}
+      {showContent === "ExpenseManagement" && <ViewExpense />}
+      {showContent === "IncomeStatements" && <ViewIncome />}
       {showContent === "FinancialReports" && <FinancialReports />}
       
       {!showContent && (

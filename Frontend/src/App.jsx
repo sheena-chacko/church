@@ -48,12 +48,15 @@ import ViewBloodDonationPage from './Pages/ViewBloodDonationPage.jsx';
 import FamilyUnitView from './Pages/FamilyUnitView.jsx';
 import FinancialReport from './Pages/FinancialReports';
 import VerifyUsers from './Pages/VerifyUsers.jsx';
-import Virtualid from './Pages/VirtualID.jsx';
+// import Virtualid from './Pages/VirtualID.jsx';
 import Event from './Pages/Event.jsx';
 import ViewEvents from './Pages/ViewEvents.jsx';
 import ProfileForm from './Pages/ProfileForm.jsx';
 import ViewExpense from './Pages/ViewExpense.jsx';
 import ViewIncome from './Pages/ViewIncome.jsx';
+import ViewBalanceSheet from './Pages/ViewBalanceSheet.jsx';
+import Virtualid from './Pages/Virtualid.jsx';
+import { useSelector } from 'react-redux';
 // import Virtualid from './Pages/Virtualid.jsx';
 // import ParishMemberPage from './Pages/ParishMemberPage.jsx';
 // import BloodDonationList from './Pages/BloodDonationList';
@@ -63,23 +66,25 @@ import ViewIncome from './Pages/ViewIncome.jsx';
 // import VicarReports from './Pages/VicarReports';
 
 function App() {
+  const userRole = useSelector((state)=>state.auth.role)
+  
+  
   return (
     <BrowserRouter>
+    {userRole==="Normal User"?(
       <Routes>
-        <Route path="/" element={<><Navbar/><Home /><HFooter/></>} />
-        <Route path="/contact" element={<><Navbar/><Contact /><Footer/></>} />
-        <Route path="/services" element={<><Navbar/><Services /><Footer/></>} />
-        <Route path="/mission" element={<><Navbar/><Mission /><Footer/></>} />
-        <Route path="/login" element={<><Navbar/><Login /><Footer/></>} />
         <Route path="/signup" element={<><Navbar/><SignUp /><Footer/></>} />
-        <Route path="/gallery" element={<><Navbar/><Gallery /><Footer/></>} />
+        {/* <Route path="/gallery" element={<><Navbar/><Gallery /><Footer/></>} /> */}
         <Route path="/image" element={<><Navbar/><ImageGalleryUpload /><Footer/></>} />
         <Route path="/parish-directory" element={<><UserNavbar/><ParishDirectory /><Footer/></>} />
         <Route path="/parish-list" element={<><ParishList /></>} />
+        <Route path="/donation" element={<><Navbar/><Donation /><Footer/></>} />
+
+
         {/* <Route path="/parish-member" element={<><ParishMemberPage /></>} /> */}
 
 
-        <Route path="/past-vicars" element={<><Navbar/><PastVicars /><Footer/></>} />
+        {/* <Route path="/past-vicars" element={<><Navbar/><PastVicars /><Footer/></>} /> */}
 
 
 
@@ -105,17 +110,18 @@ function App() {
         {/* <Route path="/gallery" element={<><UserNavbar/><Gallery /><Footer/></>} /> */}
 
 
-        <Route path="/adminreports" element={<><UserNavbar/><AdminReports/><Footer/></>} />
+        {/* <Route path="/adminreports" element={<><UserNavbar/><AdminReports/><Footer/></>} /> */}
         <Route path="/quiz-result" element={<><QuizResult/></>} />
         <Route path="/add" element={<><UserNavbar/><AddPetition /><Footer/></>} />
         <Route path="/view" element={<><UserNavbar/><ViewPetitions /><Footer/></>} />
         <Route path="/view-events" element={<><UserNavbar/><ViewEvents /><Footer/></>} />
         <Route path="/profile-form" element={<><UserNavbar/><ProfileForm /><Footer/></>} />
-
-
+        <Route path='*' element={<>404 Not Found</>}/>
+        </Routes>
+      ):userRole === "Admin"?
+      <Routes>
         {/* Admin Routes */}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/family-unit" element={<FamilyUnitForm />} />
         <Route path="/view-family-unit" element={<FamilyUnitView />} />
@@ -123,12 +129,16 @@ function App() {
 
         <Route path="/view-expense" element={<ViewExpense />} />
         <Route path="/view-income" element={<ViewIncome />} />
+        <Route path="/view-balancesheet" element={<ViewBalanceSheet />} />
+        <Route path="/adminreports" element={<><UserNavbar/><AdminReports/><Footer/></>} />
 
-
-
+        <Route path='*' element={<>404 Not Found</>}/>
+      </Routes>
+      :userRole ==="Accountant"?
+      <Routes>
 
         {/* Accountant Routes */}
-        <Route path="/accountant-login" element={<AccountantLogin />} />
+        
         <Route path="/accountant-home" element={<><AccountantNavbar/><AccountantHome/><Footer/></>} />
         <Route path="/balance-sheet" element={<><AccountantNavbar/><BalanceSheet/><Footer/></>} />
         <Route path="/expense-management" element={<><AccountantNavbar/><ExpenseManagement/><Footer/></>} />
@@ -136,17 +146,37 @@ function App() {
         <Route path="/financial-reports" element={<><AccountantNavbar/><FinancialReport/><Footer/></>} />
         <Route path="/donation-tracking" element={<><AccountantNavbar/><DonationTracking/><Footer/></>} />
         <Route path="/budget-planning" element={<><AccountantNavbar/><BudgetPlanning/><Footer/></>} />
-
+        <Route path='*' element={<>404 Not Found</>}/>
+      </Routes>
+      :userRole==="Vicar"?
+      <Routes>
         {/* Vicar Routes */}
         <Route path="/vicar-dashboard" element={<VicarDashboard />} />
-<Route path="/view" element={<ViewPetitions />} />
-<Route path="/vicar-login" element={<VicarLogin />} />
-<Route path="/event" element={<Event />} />
+        <Route path="/view" element={<ViewPetitions />} />
+        <Route path="/event" element={<Event />} />
+        <Route path='*' element={<>404 Not Found</>}  />   
+        </Routes>
+        :<Routes>
+          <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/" element={<><Navbar/><Home /><HFooter/></>} />
+          <Route path="/contact" element={<><Navbar/><Contact /><Footer/></>} />
+          <Route path="/services" element={<><Navbar/><Services /><Footer/></>} />
+          <Route path="/mission" element={<><Navbar/><Mission /><Footer/></>} />
+          <Route path="/gallery" element={<><Navbar/><Gallery /><Footer/></>} />
+          <Route path="/donation" element={<><Navbar/><Donation /><Footer/></>} />
 
-
-</Routes>
+          <Route path="/past-vicars" element={<><Navbar/><PastVicars /><Footer/></>} />
+          <Route path="/login" element={<><Navbar/><Login /><Footer/></>} />
+          <Route path="/vicar-login" element={<VicarLogin />} />
+          <Route path="/accountant-login" element={<AccountantLogin />} />
+          <Route path='*' element={<><Navbar/><Login /><Footer/></>} />
+          </Routes>}
+          
     </BrowserRouter>
+    
+        
   );
+  
 }
 
 export default App;
