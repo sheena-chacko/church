@@ -245,6 +245,7 @@ const userController = {
             res.status(500).json({ message: 'Internal server error', error: error.message });
         }
     }),
+    
     updateUserProfile: asyncHandler(async (req, res) => {
         const userId = req.user.id;
         const { dateOfBirth, contactNumber } = req.body;
