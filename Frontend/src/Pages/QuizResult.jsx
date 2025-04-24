@@ -23,7 +23,7 @@ const QuizResult = () => {
           Your Score: {score} / {total}
         </p>
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/user-home')}
           className="bg-green-500 text-white py-3 px-6 rounded-lg text-lg font-bold hover:bg-green-600 transition duration-300"
         >
           Back to Home
