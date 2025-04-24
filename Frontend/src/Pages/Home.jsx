@@ -9,12 +9,11 @@ const Home = () => {
       {/* Hero Section (Background Image with Content Overlay) */}
       <div className="relative bg-black bg-opacity-50">
         <div className="absolute inset-0">
-          <img
-            src="public/church4.jpeg" // ✅ Correct: Using public folder
+        <img
+            src="/church4.jpeg" // ✅ Corrected path
             alt="Church Background"
             className="w-full h-full object-cover brightness-75"
-          />
-        </div>
+          />        </div>
         {/* Content Overlay */}
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6">
           <h1 className="text-5xl font-extrabold leading-snug max-w-3xl">
