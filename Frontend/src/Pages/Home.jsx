@@ -10,7 +10,7 @@ const Home = () => {
       <div className="relative bg-black bg-opacity-50">
         <div className="absolute inset-0">
         <img
-            src="/church4.jpeg" // ✅ Corrected path
+            src="/church_body.jpeg" // ✅ Corrected path
             alt="Church Background"
             className="w-full h-full object-cover brightness-75"
           />        </div>
