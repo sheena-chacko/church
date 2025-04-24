@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import BalanceSheet from "../Pages/BalanceSheet";
-import ExpenseManagement from "../Pages/ExpenseManagement";
+import ExpenseManagement from "../Pages/Expensemanagement";
 import IncomeStatements from "../Pages/IncomeStatements";
 import FinancialReports from "../Pages/FinancialReports";
 import ViewExpense from "./ViewExpense";

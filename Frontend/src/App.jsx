@@ -21,7 +21,7 @@ import QuizForm from './Pages/QuizForm';
 import AccountantNavbar from './Components/AccountantNavbar';
 import AccountantHome from './Pages/AccountantHome';
 import BalanceSheet from './Pages/BalanceSheet';
-import ExpenseManagement from './Pages/ExpenseManagement';
+import ExpenseManagement from './Pages/Expensemanagement';
 import IncomeStatements from './Pages/IncomeStatements';
 import DonationTracking from './Pages/DonationTracking';
 import BudgetPlanning from './Pages/BudgetPlanning';
