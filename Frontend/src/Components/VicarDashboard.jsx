@@ -101,7 +101,7 @@ const VicarDashboard = () => {
               </div>
             </Link>
             {/* Create chart */}
-            <Link to="/donationchart">
+            <Link to="/donation-chart">
               <div className="p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 text-center">
                 <CalendarPlus className="w-12 h-12 text-purple-600 mx-auto mb-3" />
                 <h3 className="text-xl font-semibold">Pie Chart</h3>

@@ -58,12 +58,12 @@ import ViewBalanceSheet from './Pages/ViewBalanceSheet.jsx';
 import Virtualid from './Pages/Virtualid.jsx';
 import { useSelector } from 'react-redux';
 import Notification from './Pages/Notification.jsx';
-import EditFamilyUnitForm from './Pages/EditFamilyUnitForm.jsx';
+// import EditFamilyUnitForm from './Pages/EditFamilyUnitForm.jsx';
 import AddFamilyUnit from './Pages/AddFamilyUnit.jsx';
 import ReceiptPage from './Pages/ReceiptPage.jsx';
-import Allfamily from './Pages/Allfamily.jsx';
+// import Allfamily from './Pages/Allfamily.jsx';
 import FamilyMemberView from './Pages/FamilyMemberView.jsx';
-import DonationPieChart from './Pages/DonationPiechart.jsx';
+import DonationChart from './Pages/DonationChart.jsx';
 // import Virtualid from './Pages/Virtualid.jsx';
 // import ParishMemberPage from './Pages/ParishMemberPage.jsx';
 // import BloodDonationList from './Pages/BloodDonationList';
@@ -170,7 +170,10 @@ function App() {
         <Route path="/view" element={<ViewPetitions />} />
         <Route path="/event" element={<Event />} />
         <Route path="/parish-list" element={<><ParishList /></>} />
-        <Route path="/donationchart" element={<><DonationPieChart /></>} />
+        <Route path="/donation-chart" element={<><DonationChart /></>} />
+
+
+
 
         
         {/* <Route path="/allfamily" element={<><Allfamily /></>} /> */}
