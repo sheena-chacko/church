@@ -9,9 +9,10 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { BASE_URL } from "../Utiles/Url";
 
 const fetchDonations = async () => {
-  const res = await axios.get("/api/v1/donation"); // Adjust if your route is different
+  const res = await axios.get(`${BASE_URL}/donation`); // Adjust if your route is different
   return res.data;
 };
 
