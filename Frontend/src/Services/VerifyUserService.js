@@ -11,6 +11,16 @@ const userService = {
     });
     return response.data;
   },
+
+  getVerifiedUsers: async () => {
+    const response = await axios.get(`${BASE_URL}/users/verified`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("userToken")}`,
+      },
+    });
+    return response.data;
+  },
+
   verifyUser: async (userId) => {
     const response = await axios.put(
       `${BASE_URL}/users/verify/${userId}`,
@@ -23,6 +33,7 @@ const userService = {
     );
     return response.data;
   },
+
   unverifyUser: async (userId) => {
     const response = await axios.put(
       `${BASE_URL}/users/unverify/${userId}`,
@@ -35,6 +46,7 @@ const userService = {
     );
     return response.data;
   },
+
   getAllUsers: async () => {
     const response = await axios.get(`${BASE_URL}/users`, {
       headers: {
@@ -43,6 +55,6 @@ const userService = {
     });
     return response.data;
   },
-  
 };
-export default userService
+
+export default userService;
