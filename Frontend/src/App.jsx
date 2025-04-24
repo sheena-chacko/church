@@ -63,6 +63,7 @@ import AddFamilyUnit from './Pages/AddFamilyUnit.jsx';
 import ReceiptPage from './Pages/ReceiptPage.jsx';
 import Allfamily from './Pages/Allfamily.jsx';
 import FamilyMemberView from './Pages/FamilyMemberView.jsx';
+import DonationPieChart from './Pages/DonationPiechart.jsx';
 // import Virtualid from './Pages/Virtualid.jsx';
 // import ParishMemberPage from './Pages/ParishMemberPage.jsx';
 // import BloodDonationList from './Pages/BloodDonationList';
@@ -169,7 +170,10 @@ function App() {
         <Route path="/view" element={<ViewPetitions />} />
         <Route path="/event" element={<Event />} />
         <Route path="/parish-list" element={<><ParishList /></>} />
-        <Route path="/allfamily" element={<><Allfamily /></>} />
+        <Route path="/donationchart" element={<><DonationPieChart /></>} />
+
+        
+        {/* <Route path="/allfamily" element={<><Allfamily /></>} /> */}
 
 
 

@@ -100,6 +100,16 @@ const VicarDashboard = () => {
                 </p>
               </div>
             </Link>
+            {/* Create chart */}
+            <Link to="/donationchart">
+              <div className="p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 text-center">
+                <CalendarPlus className="w-12 h-12 text-purple-600 mx-auto mb-3" />
+                <h3 className="text-xl font-semibold">Pie Chart</h3>
+                <p className="text-gray-600 text-sm mt-1">
+                  Add and manage upcoming church events.
+                </p>
+              </div>
+            </Link>
 
             {/* Go to Home */}
             <Link to="/vicar-dashboard">
