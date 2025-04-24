@@ -6,8 +6,8 @@ const UserHome = () => {
       {/* Hero Section (Background Image with Content Overlay) */}
       <div className="relative bg-black bg-opacity-50">
         <div className="absolute inset-0">
-          <img
-            src="public/church2.jpeg" // ✅ Correct: Using public folder
+        <img
+            src="/church2.jpeg" // ✅ Corrected path
             alt="Church Background"
             className="w-full h-full object-cover brightness-75"
           />
