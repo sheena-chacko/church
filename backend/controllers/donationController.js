@@ -3,6 +3,7 @@ const Transaction = require('../models/transactionModel');
 const asyncHandler = require('express-async-handler');
 const mongoose = require('mongoose');
 const Receipt = require('../models/receiptModel');
+require("dotenv").config()
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const donationController = {
