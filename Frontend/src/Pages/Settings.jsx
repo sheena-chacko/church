@@ -20,7 +20,7 @@ const Settings = () => {
     }),
     onSubmit: async (values) => {
       try {
-        const response = await axios.put(`http://localhost:5000/api/user/${userId}`, values);
+        const response = await axios.put(`https://nexus-bt1n.onrender.com/api/user/${userId}`, values);
         alert("Settings updated successfully!");
         console.log(response.data);
       } catch (error) {
@@ -32,7 +32,7 @@ const Settings = () => {
 
   // ✅ Fetch user data on mount
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/user/${userId}`)
+    axios.get(`https://nexus-bt1n.onrender.com/api/user/${userId}`)
       .then((response) => {
         formik.setValues({
           username: response.data.username,

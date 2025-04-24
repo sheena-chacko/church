@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { getuserToken, getDecodeData } from '../Utiles/storageHandler';
 
-const BASE_URL = "http://localhost:5000/api/v1";
+const BASE_URL = "https://nexus-bt1n.onrender.com/api/v1";
 
 // API to add blood donor
 const addBloodDonorAPI = async (data) => {

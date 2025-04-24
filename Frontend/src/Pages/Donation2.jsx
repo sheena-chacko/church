@@ -6,7 +6,7 @@ import { Elements, CardElement, useStripe, useElements } from "@stripe/react-str
 import axios from "axios";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY); 
-const BASE_URL = "http://localhost:5000/api/v1"; 
+const BASE_URL = "https://nexus-bt1n.onrender.com/api/v1"; 
 
 const DonationForm = () => {
   const stripe = useStripe();

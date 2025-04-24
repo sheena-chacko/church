@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getuserToken } from "../Utiles/storageHandler";
 
- const BASE_URL = "http://localhost:5000/api/v1/gallery";
+ const BASE_URL = "https://nexus-bt1n.onrender.com/api/v1/gallery";
 
 const galleryService = {
   async createGalleryItem(file, description) {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaHandHoldingHeart } from "react-icons/fa";
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000/api/v1"; // Replace with your backend URL
+const BASE_URL = "https://nexus-bt1n.onrender.com/api/v1"; // Replace with your backend URL
 
 const DonatorsList = () => {
   const [donators, setDonators] = useState([]);
