@@ -2,22 +2,28 @@ import React from "react";
 
 const vicars = [
   {
-    name: "Rev. John Doe",
-    tenure: "2010 - 2015",
+    name: "Joseph Powathil",
+    tenure: "2000 - 2005",
     message: "Faith and community bring us closer to God.",
-    photo: "https://via.placeholder.com/150"
+    photo: "/josephpowathil.jpg" // local image from public folder
   },
   {
-    name: "Rev. Michael Smith",
-    tenure: "2016 - 2020",
+    name: "Rev. Jose Pulikkal",
+    tenure: "2005 - 2010",
     message: "Love and service define our journey.",
-    photo: "https://via.placeholder.com/150"
+    photo: "/father.jpg" // local image from public folder
   },
   {
-    name: "Rev. David Johnson",
-    tenure: "2021 - Present",
+    name: "Mar Mathew Vattakkuzhy",
+    tenure: "2010 - 2015 ",
     message: "Let us walk in His light together.",
-    photo: "https://via.placeholder.com/150"
+    photo: "/father2.webp" // local image from public folder
+  },
+  {
+    name: "Mar Mathew Arackkal",
+    tenure: "2015 - 2020 ",
+    message: "Let us walk in His light together.",
+    photo: "/arackkal.jpg" // local image from public folder
   }
 ];
 
@@ -28,7 +34,11 @@ const PastVicars = () => {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {vicars.map((vicar, index) => (
           <div key={index} className="bg-white p-4 rounded-2xl shadow-lg text-center">
-            <img src={vicar.photo} alt={vicar.name} className="mx-auto rounded-full w-32 h-32 object-cover mb-4" />
+            <img
+              src={vicar.photo}
+              alt={vicar.name}
+              className="mx-auto rounded-full w-32 h-32 object-cover mb-4 border-2 border-gray-300"
+            />
             <h2 className="text-xl font-semibold text-gray-700">{vicar.name}</h2>
             <p className="text-gray-500 text-sm">{vicar.tenure}</p>
             <p className="mt-2 text-gray-600 italic">"{vicar.message}"</p>

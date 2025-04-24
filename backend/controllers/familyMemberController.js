@@ -97,7 +97,6 @@ const familyMemberController = {
             res.status(500).json({ message: 'Internal server error', error: error.message });
         }
     }),
-
     getAllFamilyMembers: asyncHandler(async (req, res) => {
         try {
             const familyMembers = await FamilyMember.find().populate('creatorId', 'name email');

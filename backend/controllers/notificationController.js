@@ -6,7 +6,10 @@ const { sendNotificationEmail } = require('../utils/nodemailer');
 
 const notificationController = {
     sendEventNotification: asyncHandler(async (event) => {
-        const verifiedUsers = await User.find({ isVerified: true });
+        const verifiedUsers = await User.find({role:"Normal User"});
+
+        // console.log(verifiedUsers);
+        
 
         for (const user of verifiedUsers) {
             const mailOptions = {

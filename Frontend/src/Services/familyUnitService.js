@@ -27,14 +27,17 @@ export const getAllFamilyUnitsAPI = async () => {
 };
 
 // Update family unit details
+// ✅ Fix this function in `familyUnitService.js`
 export const updateFamilyUnitAPI = async (id, familyUnitData) => {
-    const response = await axios.put(`${BASE_URL}/family-units/${id}`, familyUnitData, getConfig());
+    const response = await axios.put(`${BASE_URL}/family-unit/${id}`, familyUnitData, getConfig());
     return response.data;
 };
 
+
 // Delete a family unit
+// Corrected DELETE endpoint
 export const deleteFamilyUnitAPI = async (id) => {
-    const response = await axios.delete(`${BASE_URL}/family-units/${id}`, getConfig());
+    const response = await axios.delete(`${BASE_URL}/family-unit/${id}`, getConfig());
     return response.data;
 };
 

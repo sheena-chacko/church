@@ -35,5 +35,14 @@ const userService = {
     );
     return response.data;
   },
+  getAllUsers: async () => {
+    const response = await axios.get(`${BASE_URL}/users`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("userToken")}`,
+      },
+    });
+    return response.data;
+  },
+  
 };
 export default userService

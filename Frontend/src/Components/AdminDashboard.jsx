@@ -10,6 +10,7 @@ import AdminReports from "../Pages/AdminReports";
 import ViewPetitions from "../Pages/ViewPetitions";
 import FamilyUnitForm from "../Pages/FamilyUnitForm";
 import FamilyUnitView from "../Pages/FamilyUnitView";
+import FamilyMemberView from "../Pages/FamilyMemberView"; // ✅ Newly imported
 import ImageGalleryUpload from "../Pages/ImageGalleryUpload";
 import VerifyUsers from "../Pages/VerifyUsers";
 import ParishList from "../Pages/ParishList";
@@ -18,6 +19,7 @@ import DonatorsList from "../Pages/DonatorsList";
 import ViewExpense from "../Pages/ViewExpense";
 import ViewIncome from "../Pages/ViewIncome";
 import ViewBalanceSheet from "../Pages/ViewBalanceSheet";
+import QuizForms from "../Pages/QuizForms"; // ✅ Newly imported
 
 const AdminDashboard = () => {
   const [userDropdown, setUserDropdown] = useState(false);
@@ -27,6 +29,7 @@ const AdminDashboard = () => {
   const [showPetitions, setShowPetitions] = useState(false);
   const [showFamilyUnit, setShowFamilyUnit] = useState(false);
   const [showFamilyUnitView, setShowFamilyUnitView] = useState(false);
+  const [showFamilyMemberView, setShowFamilyMemberView] = useState(false); // ✅ New state
   const [showImageGallery, setShowImageGallery] = useState(false);
   const [showBloodDonors, setShowBloodDonors] = useState(false);
   const [showVerifyUsers, setShowVerifyUsers] = useState(false);
@@ -36,6 +39,7 @@ const AdminDashboard = () => {
   const [showViewExpense, setShowViewExpense] = useState(false);
   const [showViewIncome, setShowViewIncome] = useState(false);
   const [showViewBalanceSheet, setShowViewBalanceSheet] = useState(false);
+  const [showQuizForm, setShowQuizForm] = useState(false); // ✅ New state
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -59,6 +63,7 @@ const AdminDashboard = () => {
     setShowPetitions(false);
     setShowFamilyUnit(false);
     setShowFamilyUnitView(false);
+    setShowFamilyMemberView(false); // ✅ Reset new page
     setShowImageGallery(false);
     setShowBloodDonors(false);
     setShowVerifyUsers(false);
@@ -68,6 +73,7 @@ const AdminDashboard = () => {
     setShowViewExpense(false);
     setShowViewIncome(false);
     setShowViewBalanceSheet(false);
+    setShowQuizForm(false); // ✅ Reset new page
   };
 
   useEffect(() => {
@@ -97,6 +103,7 @@ const AdminDashboard = () => {
                   <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowBloodDonors(true); }}>Blood Donors</button>
                   <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowFamilyUnit(true); }}>Add Family Unit</button>
                   <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowFamilyUnitView(true); }}>View Family Unit</button>
+                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowFamilyMemberView(true); }}>View Family Members</button> {/* ✅ New button */}
                   <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowParishList(true); }}>Parish List</button>
                 </div>
               )}
@@ -111,6 +118,7 @@ const AdminDashboard = () => {
                   <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowReports(true); }}>View Reports</button>
                   <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowPetitions(true); }}>View Petitions</button>
                   <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowViewEvents(true); }}>View Events</button>
+                  <button className="block p-2 w-full text-left hover:bg-gray-700 rounded" onClick={() => { resetViews(); setShowQuizForm(true); }}>Create Quiz Form</button>
                 </div>
               )}
             </div>
@@ -145,38 +153,41 @@ const AdminDashboard = () => {
                 {showPetitions && <ViewPetitions />}
                 {showFamilyUnit && <FamilyUnitForm />}
                 {showFamilyUnitView && <FamilyUnitView />}
+                {showFamilyMemberView && <FamilyMemberView />} {/* ✅ Render Family Member View */}
                 {showImageGallery && <ImageGalleryUpload />}
                 {showVerifyUsers && <VerifyUsers />}
                 {showViewEvents && <ViewEvents />}
                 {showDonatorsList && <DonatorsList />}
+                {showQuizForm && <QuizForms />}
                 {showViewExpense && (<><button onClick={() => { resetViews(); setShowReports(true); }} className="text-blue-600 underline mb-4">← Back to Reports</button><ViewExpense /></>)}
                 {showViewIncome && (<><button onClick={() => { resetViews(); setShowReports(true); }} className="text-blue-600 underline mb-4">← Back to Reports</button><ViewIncome /></>)}
                 {showViewBalanceSheet && (<><button onClick={() => { resetViews(); setShowReports(true); }} className="text-blue-600 underline mb-4">← Back to Reports</button><ViewBalanceSheet /></>)}
                 {showBloodDonors && (
-                  <div className="bg-white p-6 rounded-lg shadow-lg border border-red-300 mt-6">
-                    <h2 className="text-2xl font-bold text-red-500 mb-4">Blood Donors List</h2>
-                    {isLoading && <p className="text-center text-gray-600">Loading donors...</p>}
-                    {isError && <p className="text-center text-red-500">{error.message}</p>}
-                    <table className="w-full border-collapse border border-gray-300">
-                      <thead className="bg-red-500 text-white">
-                        <tr>
-                          <th className="p-3 border border-gray-300">Name</th>
-                          <th className="p-3 border border-gray-300">Blood Type</th>
-                          <th className="p-3 border border-gray-300">Contact</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {donors?.map((donor) => (
-                          <tr key={donor.id} className="text-center">
-                            <td className="p-3 border border-gray-300">{donor.name}</td>
-                            <td className="p-3 border border-gray-300 text-red-600 font-bold">{donor.bloodType}</td>
-                            <td className="p-3 border border-gray-300">{donor.contactNumber}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+  <div className="bg-white p-6 rounded-lg shadow-lg border border-red-300 mt-6">
+    <h2 className="text-2xl font-bold text-red-500 mb-4">Blood Donors List</h2>
+    {isLoading && <p className="text-center text-gray-600">Loading donors...</p>}
+    {isError && <p className="text-center text-red-500">{error.message}</p>}
+    <table className="w-full border-collapse border border-gray-300">
+      <thead className="bg-red-500 text-white">
+        <tr>
+          <th className="p-3 border border-gray-300">Name</th>
+          <th className="p-3 border border-gray-300">Blood Type</th>
+          <th className="p-3 border border-gray-300">Contact</th>
+        </tr>
+      </thead>
+      <tbody>
+        {donors?.map((donor) => (
+          <tr key={donor.id} className="text-center">
+            <td className="p-3 border border-gray-300">{donor.name}</td>
+            <td className="p-3 border border-gray-300 text-red-600 font-bold">{donor.bloodType}</td>
+            {/* Corrected this line to use donor.contactNumber */}
+            <td className="p-3 border border-gray-300">{donor.contactNumber}</td> {/* Assuming contactNumber is the correct field */}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
               </>
             )}
           </div>

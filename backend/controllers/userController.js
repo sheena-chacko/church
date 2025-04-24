@@ -120,6 +120,7 @@ const userController = {
           res.status(500).json({ message: 'Internal server error', error: error.message });
         }
       }),
+      
 
     getAllUsers: asyncHandler(async (req, res) => {
         try {

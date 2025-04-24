@@ -57,6 +57,12 @@ import ViewIncome from './Pages/ViewIncome.jsx';
 import ViewBalanceSheet from './Pages/ViewBalanceSheet.jsx';
 import Virtualid from './Pages/Virtualid.jsx';
 import { useSelector } from 'react-redux';
+import Notification from './Pages/notification.jsx';
+import EditFamilyUnitForm from './Pages/EditFamilyUnitForm.jsx';
+import AddFamilyUnit from './Pages/AddFamilyUnit.jsx';
+import ReceiptPage from './Pages/ReceiptPage.jsx';
+import Allfamily from './Pages/Allfamily.jsx';
+import FamilyMemberView from './Pages/FamilyMemberView.jsx';
 // import Virtualid from './Pages/Virtualid.jsx';
 // import ParishMemberPage from './Pages/ParishMemberPage.jsx';
 // import BloodDonationList from './Pages/BloodDonationList';
@@ -73,7 +79,7 @@ function App() {
     <BrowserRouter>
     {userRole==="Normal User"?(
       <Routes>
-        <Route path="/signup" element={<><Navbar/><SignUp /><Footer/></>} />
+        {/* <Route path="/signup" element={<><Navbar/><SignUp /><Footer/></>} /> */}
         {/* <Route path="/gallery" element={<><Navbar/><Gallery /><Footer/></>} /> */}
         <Route path="/image" element={<><Navbar/><ImageGalleryUpload /><Footer/></>} />
         <Route path="/parish-directory" element={<><UserNavbar/><ParishDirectory /><Footer/></>} />
@@ -97,6 +103,8 @@ function App() {
         {/* <Route path="/blood-donationlist" element={<><UserNavbar/><BloodDonationList/><Footer/></>} /> */}
 
         <Route path="/view-blooddonation" element={<><UserNavbar/><ViewBloodDonationPage/><Footer/></>} />
+        <Route path="/notification" element={<><UserNavbar/><Notification/><Footer/></>} />
+
 
 
         {/* User Routes */}
@@ -107,6 +115,8 @@ function App() {
         <Route path="/reports" element={<><UserNavbar/><Reports/><Footer/></>} />
         <Route path="/quiz-form" element={<><UserNavbar/><QuizForm/><Footer/></>} />
         <Route path="/quiz-forms" element={<><UserNavbar/><QuizForms/><Footer/></>} />
+        <Route path="/add-familyunit" element={<><UserNavbar/><AddFamilyUnit/><Footer/></>} />
+
         {/* <Route path="/gallery" element={<><UserNavbar/><Gallery /><Footer/></>} /> */}
 
 
@@ -131,6 +141,10 @@ function App() {
         <Route path="/view-income" element={<ViewIncome />} />
         <Route path="/view-balancesheet" element={<ViewBalanceSheet />} />
         <Route path="/adminreports" element={<><UserNavbar/><AdminReports/><Footer/></>} />
+        {/* <Route path="/edit-family-unit" element={<><UserNavbar/><EditFamilyUnitForm/><Footer/></>} /> */}
+        <Route path="/editfamilymembers" element={<FamilyMemberView />} />
+
+
 
         <Route path='*' element={<>404 Not Found</>}/>
       </Routes>
@@ -154,6 +168,12 @@ function App() {
         <Route path="/vicar-dashboard" element={<VicarDashboard />} />
         <Route path="/view" element={<ViewPetitions />} />
         <Route path="/event" element={<Event />} />
+        <Route path="/parish-list" element={<><ParishList /></>} />
+        <Route path="/allfamily" element={<><Allfamily /></>} />
+
+
+
+
         <Route path='*' element={<>404 Not Found</>}  />   
         </Routes>
         :<Routes>
@@ -164,11 +184,17 @@ function App() {
           <Route path="/mission" element={<><Navbar/><Mission /><Footer/></>} />
           <Route path="/gallery" element={<><Navbar/><Gallery /><Footer/></>} />
           <Route path="/donation" element={<><Navbar/><Donation /><Footer/></>} />
+          <Route path="/receipt" element={<><ReceiptPage /></>} />
+
 
           <Route path="/past-vicars" element={<><Navbar/><PastVicars /><Footer/></>} />
           <Route path="/login" element={<><Navbar/><Login /><Footer/></>} />
           <Route path="/vicar-login" element={<VicarLogin />} />
           <Route path="/accountant-login" element={<AccountantLogin />} />
+          <Route path="/signup" element={<><Navbar/><SignUp /><Footer/></>} />
+
+
+
           <Route path='*' element={<><Navbar/><Login /><Footer/></>} />
           </Routes>}
           
