@@ -2,7 +2,6 @@ import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import userService from "../Services/VerifyUserService";
 
-
 const VerifyUsers = () => {
   const queryClient = useQueryClient();
 
