@@ -24,7 +24,7 @@ const VerifyUsers = () => {
     error: errorVerified,
   } = useQuery({
     queryKey: ["verifiedUsers"],
-    queryFn: userService.getVerifiedUsers, // Adjust this API call to fetch verified users
+    queryFn: userService.getVerifiedUsers, // Ensure this function is implemented in the service
   });
 
   // Mutation to verify a user
