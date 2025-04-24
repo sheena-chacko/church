@@ -8,7 +8,8 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const donationController = {
     createDonation: asyncHandler(async (req, res) => {
-        const { name, contactNumber, amount, message, stripeToken } = req.body;
+        const { name, contactNumber, amount, message, stripeToken } = req.body
+        
 
         try {
             // Create a Stripe charge
@@ -41,6 +42,10 @@ const donationController = {
     stripeWebhook: asyncHandler(async (req, res) => {
         const sig = req.headers['stripe-signature'];
         let event;
+        console.log(req.body);
+        console.log(sig);
+        
+        
 
         try {
             event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
