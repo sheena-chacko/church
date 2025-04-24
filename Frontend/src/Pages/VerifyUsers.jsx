@@ -7,13 +7,24 @@ const VerifyUsers = () => {
 
   // Fetch unverified users
   const {
-    data: users = [],
-    isLoading,
-    isError,
-    error,
+    data: unverifiedUsers = [],
+    isLoading: isLoadingUnverified,
+    isError: isErrorUnverified,
+    error: errorUnverified,
   } = useQuery({
     queryKey: ["unverifiedUsers"],
     queryFn: userService.getUnverifiedUsers,
+  });
+
+  // Fetch verified users
+  const {
+    data: verifiedUsers = [],
+    isLoading: isLoadingVerified,
+    isError: isErrorVerified,
+    error: errorVerified,
+  } = useQuery({
+    queryKey: ["verifiedUsers"],
+    queryFn: userService.getVerifiedUsers, // Adjust this API call to fetch verified users
   });
 
   // Mutation to verify a user
@@ -32,14 +43,14 @@ const VerifyUsers = () => {
     verifyMutation.mutate(userId);
   };
 
-  if (isLoading) {
-    return <p className="text-center text-gray-600">Loading unverified users...</p>;
+  if (isLoadingUnverified || isLoadingVerified) {
+    return <p className="text-center text-gray-600">Loading users...</p>;
   }
 
-  if (isError) {
+  if (isErrorUnverified || isErrorVerified) {
     return (
       <p className="text-red-600 text-center">
-        {error.message || "Failed to load unverified users."}
+        {(errorUnverified || errorVerified)?.message || "Failed to load users."}
       </p>
     );
   }
@@ -47,12 +58,15 @@ const VerifyUsers = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <h2 className="text-3xl font-bold text-gray-900 text-center mb-6">
-        Verify Unverified Users
+        Verify Users
       </h2>
-      {users.length === 0 ? (
-        <p className="text-center text-gray-600">No unverified users found.</p>
-      ) : (
-        <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
+
+      {/* Unverified Users Table */}
+      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6 mb-6">
+        <h3 className="text-2xl font-bold text-gray-900 mb-4">Unverified Users</h3>
+        {unverifiedUsers.length === 0 ? (
+          <p className="text-center text-gray-600">No unverified users found.</p>
+        ) : (
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-gray-200">
@@ -64,7 +78,7 @@ const VerifyUsers = () => {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {unverifiedUsers.map((user) => (
                 <tr key={user._id} className="hover:bg-gray-50">
                   <td className="border border-gray-300 px-4 py-2">{user.name}</td>
                   <td className="border border-gray-300 px-4 py-2">{user.email}</td>
@@ -87,8 +101,39 @@ const VerifyUsers = () => {
               ))}
             </tbody>
           </table>
-        </div>
-      )}
+        )}
+      </div>
+
+      {/* Verified Users Table */}
+      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
+        <h3 className="text-2xl font-bold text-gray-900 mb-4">Verified Users</h3>
+        {verifiedUsers.length === 0 ? (
+          <p className="text-center text-gray-600">No verified users found.</p>
+        ) : (
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="border border-gray-300 px-4 py-2 text-left">Name</th>
+                <th className="border border-gray-300 px-4 py-2 text-left">Email</th>
+                <th className="border border-gray-300 px-4 py-2 text-left">Role</th>
+                <th className="border border-gray-300 px-4 py-2 text-left">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {verifiedUsers.map((user) => (
+                <tr key={user._id} className="hover:bg-gray-50">
+                  <td className="border border-gray-300 px-4 py-2">{user.name}</td>
+                  <td className="border border-gray-300 px-4 py-2">{user.email}</td>
+                  <td className="border border-gray-300 px-4 py-2">{user.role}</td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    <span className="text-green-600">Verified</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 };
