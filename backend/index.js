@@ -13,7 +13,7 @@ const app = express();
 // CORS Configuration
 app.use(
     cors({
-        origin: 'https://nexus-one-dun.vercel.app/',
+        origin: 'https://nexus-one-dun.vercel.app',
         credentials: true,
         optionsSuccessStatus: 200
     })
