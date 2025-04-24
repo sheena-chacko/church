@@ -57,7 +57,7 @@ import ViewIncome from './Pages/ViewIncome.jsx';
 import ViewBalanceSheet from './Pages/ViewBalanceSheet.jsx';
 import Virtualid from './Pages/Virtualid.jsx';
 import { useSelector } from 'react-redux';
-import Notification from './Pages/notification.jsx';
+import Notification from './Pages/Notification.jsx';
 import EditFamilyUnitForm from './Pages/EditFamilyUnitForm.jsx';
 import AddFamilyUnit from './Pages/AddFamilyUnit.jsx';
 import ReceiptPage from './Pages/ReceiptPage.jsx';
