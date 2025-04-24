@@ -12,7 +12,7 @@ const AccountantHome = () => {
   return (
     <div 
       className="min-h-screen bg-cover bg-center relative"
-      style={{ backgroundImage: `url("public/acc.webp")` }} // ✅ Corrected path
+      style={{ backgroundImage: `url("/acc.webp")` }} // ✅ Corrected path
     >
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/50"></div>
