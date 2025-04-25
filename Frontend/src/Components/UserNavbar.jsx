@@ -4,14 +4,25 @@ import { useDispatch } from "react-redux";
 import { logout } from "../Redux/UserSlice";
 import { Bell, ChevronDown } from "lucide-react";
 import "../App.css";
-import { notificationService } from "../Services/notificationService";
+import { getUserNotificationsAPI, MarkAllAsReadAPI, markAsReadAPI } from "../Services/notificationService";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const UserNavbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState({ parish: false, member: false, service: false });
+  const queryClient = useQueryClient()
+
+  const markAllAsRead = useMutation({
+    mutationFn:MarkAllAsReadAPI,
+    mutationKey:['mark-all-as-read']
+  })
+
+  const markAsRead = useMutation({
+    mutationFn:markAsReadAPI,
+    mutationKey:['mark-as-read']
+  })
 
   const handleLogout = () => {
     dispatch(logout());
@@ -25,21 +36,22 @@ const UserNavbar = () => {
     setMenuOpen((prev) => ({ ...prev, [menu]: !prev[menu] }));
   };
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const data = await notificationService.getUserNotifications();
-        setNotifications(data.notifications || []);
-      } catch (err) {
-        console.error("Error fetching notifications:", err);
-        setNotifications([]);
-      }
-    };
-
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 10000);
-    return () => clearInterval(interval);
-  }, []);
+  const {data:notifications, isLoading:notificationLoading} = useQuery({
+    queryKey:['notification'],
+    queryFn:getUserNotificationsAPI
+  })
+  
+  const handleMarkAllAsRead = ()=>{
+    markAllAsRead.mutateAsync().then((data)=>{
+      queryClient.invalidateQueries(['notification'])
+    })
+  }
+  const handleMarkAsRead = (id)=>{
+    markAsRead.mutateAsync(id).then((data)=>{
+      queryClient.invalidateQueries(['notification'])
+    })
+  }
+  
 
   return (
     <nav className="bg-gray-900 text-white p-4">
@@ -102,7 +114,7 @@ const UserNavbar = () => {
           <li className="relative">
             <button onClick={toggleDropdown} className="relative hover:text-yellow-400">
               <Bell size={20} />
-              {notifications.length > 0 && (
+              {notifications?.length > 0 && (
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
               )}
             </button>
@@ -112,21 +124,50 @@ const UserNavbar = () => {
                 <div className="p-3 font-semibold border-b border-gray-300 bg-gray-100 rounded-t-lg">
                   Notifications
                 </div>
-                {notifications.length > 0 ? (
-                  notifications.map((notif, index) => (
-                    <div
-                      key={index}
-                      className="px-4 py-3 border-b border-gray-200 text-sm hover:bg-gray-100 transition duration-200"
-                    >
-                      <p className="text-gray-800">{notif.message}</p>
-                      <div className="text-xs text-gray-500 mt-1">
-                        {new Date(notif.createdAt).toLocaleString()}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="p-4 text-gray-500 text-sm text-center">No notifications found.</div>
-                )}
+                {notifications?.length > 0 ? (
+  <>
+    <div className="px-4 py-2 bg-gray-50 border-b border-gray-200 flex justify-end items-center">
+      {notifications?.some((notif) => !notif.isRead) && (
+        <button
+          onClick={() => handleMarkAllAsRead()}
+          className="text-sm text-blue-600 hover:underline focus:outline-none"
+        >
+          Mark all as read
+        </button>
+      )}
+    </div>
+    {notifications?.map((notif, index) => (
+      <div
+        key={index}
+        className={`px-4 py-3 border-b border-gray-200 text-sm hover:bg-gray-100 transition duration-200 ${
+          notif.isRead ? 'bg-white' : 'bg-blue-50' // Example: Slightly highlight unread
+        }`}
+      >
+        <div className="flex justify-between items-center">
+          <div>
+            <p className="text-gray-800 font-bold">{notif.title}</p>
+            <p className="text-gray-800">{notif.message}</p>
+            <div className="text-xs text-gray-500 mt-1">
+              {new Date(notif.createdAt).toLocaleString()}
+            </div>
+          </div>
+          {!notif.isRead && (
+            <button
+              onClick={() => handleMarkAsRead(notif._id)}
+              className="text-xs text-blue-600 hover:underline focus:outline-none"
+            >
+              Mark as read
+            </button>
+          )}
+        </div>
+      </div>
+    ))}
+  </>
+) : notificationLoading ? (
+  <div className="p-4 text-gray-500 text-sm text-center">Notification Loading...</div>
+) : (
+  <div className="p-4 text-gray-500 text-sm text-center">No notifications found.</div>
+)}
               </div>
             )}
           </li>

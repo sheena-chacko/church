@@ -15,10 +15,10 @@ const petitionRouter = require('./petitionRouter');
 const notificationRouter = require('./notificationRouter');
 const router = express()
 
-
+router.use("/donation",donationRouter)
 
 router.use(express.json())
-router.use("/donation",donationRouter)
+
 router.use("/users",userRouter)
 router.use("/parish-member",parishMemberRouter)
 router.use("/blood-donor",bloodDonorRouter)

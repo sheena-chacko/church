@@ -10,17 +10,24 @@ dotenv.config();
 connectDB();
 const app = express();
 
-// CORS Configuration
-app.use(
-    cors({
-        origin: 'https://nexus-one-dun.vercel.app',
-        credentials: true,
-        optionsSuccessStatus: 200
-    })
-);
 
+const allowedOrigins = [
+  'https://nexus-one-dun.vercel.app',
+  'http://localhost:5173',
+  "*" 
+];
 
-app.use(express.json());
+  
+app.use(cors({
+    origin: function (origin, callback) {
+        if (allowedOrigins.indexOf(origin) !== -1 || origin === undefined) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
+    optionsSuccessStatus: 200
+  }));
 
 app.use('/api/v1', router)
 
@@ -29,4 +36,4 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`));
+app.listen(PORT, console.log(`Server running  on port ${PORT}`));
