@@ -18,8 +18,8 @@ const VerifyUsers = () => {
   
 
   // Filter verified and unverified users
-  const verifiedUsers = allUsers.filter((user) => user.isParishMember);
-  const unverifiedUsers = allUsers.filter((user) => !user.isParishMember);
+  const verifiedUsers = allUsers?.filter((user) => user.isParishMember);
+  const unverifiedUsers = allUsers?.filter((user) => !user.isParishMember);
 
   // Mutation to verify a user
   const verifyMutation = useMutation({
